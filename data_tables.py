@@ -149,10 +149,10 @@ class data_tables():
 
 
     def add_user_info(self, info):
-        """ Add a new entry to the database.
+        """ Add a new entry to the database
 
         Args:
-            info (dict): A dictionary representation of the user to be added
+            info (dict): A dictionary representation of the user to be added.
 
         return:
             None
