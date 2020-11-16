@@ -152,7 +152,7 @@ class data_tables():
         """ Add a new entry to the database.
 
         Args:
-            info (dict): A dictionary representation of the user to be added.
+            info (dict): A dictionary representation of the user to be added
 
         return:
             None
