@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
-from utils import dbutils
+from utils import dbutils as dbutils
 
 # Makes print look better the RDBDataTable rows a little better.
 pd.set_option('display.width', 256)
@@ -152,12 +152,17 @@ class data_tables():
         """ Get the number of rows in the table.
 
         return:
-              Returns the count of the number of rows in the table.
+              Returns the count of the number of rows in the table if successful else None.
         """
-        session = self.create_session()
-        row_count = session.query(table).count()
-        self.commit_and_close_session(session)
-        return row_count
+        try:
+            session = self.create_session()
+            row_count = session.query(table).count()
+            self.commit_and_close_session(session)
+            return row_count
+
+        except Exception as e:
+            print(e)
+            return None
 
 
     def get_sample_rows(self, table, number_rows=_rows_to_print):
@@ -167,13 +172,18 @@ class data_tables():
             number_rows (int): Number of rows to include in a sample of the data.
 
         return:
-            A Pandas dataframe containing the first _row_to_print number of rows.
+            A Pandas dataframe containing the first number_rows number of rows
+            if successful else None.
         """
+        try:
+            session = self.create_session()
+            res = pd.read_sql(session.query(table).limit(number_rows).statement, self._engine)
+            self.commit_and_close_session(session)
+            return res
 
-        session = self.create_session()
-        res = pd.read_sql(session.query(table).limit(number_rows).statement, self._engine)
-        self.commit_and_close_session(session)
-        return res
+        except Exception as e:
+            print(e)
+            return None
 
     def get_table_class(self, table_name):
         """ Get a table Class
@@ -204,17 +214,21 @@ class data_tables():
             template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
 
         return:
-            A Pandas dataframe containing the query result
+            A Pandas dataframe containing the query result if successful. Otherwise None.
         """
         if not table_name or table_name == "":
-            raise("Table name cannot be null or empty.")
+            print("Table name cannot be null or empty.")
+            return None
 
-        session = self.create_session()
-        stmt, args = dbutils.create_select(table_name=table_name, template=template)
-        res = pd.read_sql_query(stmt, self._engine, params=args)
-        self.commit_and_close_session(session)
-
-        return res
+        try:
+            session = self.create_session()
+            stmt, args = dbutils.create_select(table_name=table_name, template=template)
+            res = pd.read_sql_query(stmt, self._engine, params=args)
+            self.commit_and_close_session(session)
+            return res
+        except Exception as e:
+            print(e)
+            return None
 
     def update_info(self, table_name, template, new_values):
         """ Query the User_info table
@@ -226,37 +240,50 @@ class data_tables():
             new_values (dict): A dictionary containing fields and the values to set for the
                             corresponding fields in the records.
         return:
-            None
+            True if successfully added uer info. False otherwise.
         """
         if not table_name or table_name == "":
-            raise("Table name cannot be null or empty")
-        session = self.create_session()
-        stmt, args = dbutils.create_update(table_name=table_name, template=template,
-                                     changed_cols=new_values)
-        cur = self._cnx.cursor()
-        cur.execute(stmt, args)
-        # res = pd.read_sql_query(stmt, con=self._cnx, params=args)
-        self._cnx.commit()
-        self.commit_and_close_session(session)
+            print("Table name cannot be null or empty.")
+            return None
+
+        try:
+            session = self.create_session()
+            stmt, args = dbutils.create_update(table_name=table_name, template=template,
+                                               changed_cols=new_values)
+            cur = self._cnx.cursor()
+            cur.execute(stmt, args)
+            # res = pd.read_sql_query(stmt, con=self._cnx, params=args)
+            self._cnx.commit()
+            self.commit_and_close_session(session)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     def add_user_info(self, info):
         """ Add a new entry to the database
 
         Args:
             info (dict): A dictionary representation of the user to be added.
-a
+
         return:
-            None
+            True if successfully added uer info. False otherwise.
         """
         new_user = self._User_info(uni=info["uni"],
                                    user_name=info["user_name"],
                                    email=info["email"],
                                    phone_number=info["phone_number"],
                                    credential=info["credential"])
+        try:
+            session = self.create_session()
+            session.add(new_user)
+            self.commit_and_close_session(session)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
-        session = self.create_session()
-        session.add(new_user)
-        self.commit_and_close_session(session)
+
     def add_address(self, info):
         """ Add a new entry to the Addresses table.
 
@@ -264,7 +291,7 @@ a
             info (dict): A dictionary representation of the information to be added.
 
         return:
-            None
+            True if successfully added uer info. False otherwise.
         """
         new_address = self._Addresses(address_id=info["address_id"],
                                   uni=info["uni"],
@@ -274,9 +301,14 @@ a
                                   address=info["address"],
                                   zipcode=info["zipcode"])
 
-        session = self.create_session()
-        session.add(new_address)
-        self.commit_and_close_session(session)
+        try:
+            session = self.create_session()
+            session.add(new_address)
+            self.commit_and_close_session(session)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     def add_listing(self, info):
         """ Add a new entry to the Listings table.
@@ -285,7 +317,7 @@ a
             info (dict): A dictionary representation of the information to be added.
 
         return:
-            None
+            True if successfully added uer info. False otherwise.
         """
         new_listing = self._Listings(listing_id=info["listing_id"],
                                   isbn=info["isbn"],
@@ -296,10 +328,14 @@ a
                                   description=info["description"],
                                   image_url=info["image_url"],
                                   is_sold=info["is_sold"])
-
-        session = self.create_session()
-        session.add(new_listing)
-        self.commit_and_close_session(session)
+        try:
+            session = self.create_session()
+            session.add(new_listing)
+            self.commit_and_close_session(session)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
 
     def add_order_info(self, info):
@@ -310,7 +346,7 @@ a
             info (dict): A dictionary representation of the information to be added.
 
         return:
-            None
+            True if successfully added uer info. False otherwise.
         """
         new_order = self._Order_info(order_id=info["order_id"],
                                   buyer_uni=info["buyer_uni"],
@@ -318,7 +354,11 @@ a
                                   listing_id=info["listing_id"],
                                   transaction_amt=info["transaction_amt"],
                                   status=info["status"])
-
-        session = self.create_session()
-        session.add(new_order)
-        self.commit_and_close_session(session)
+        try:
+            session = self.create_session()
+            session.add(new_order)
+            self.commit_and_close_session(session)
+            return True
+        except Exception as e:
+            print(e)
+            return False
