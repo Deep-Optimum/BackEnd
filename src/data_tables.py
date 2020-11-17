@@ -179,11 +179,11 @@ class data_tables():
             session = self.create_session()
             res = pd.read_sql(session.query(table).limit(number_rows).statement, self._engine)
             self.commit_and_close_session(session)
-            return res
+            return res, True
 
         except Exception as e:
             print(e)
-            return None
+            return None, False
 
     def get_table_class(self, table_name):
         """ Get a table Class
@@ -218,7 +218,7 @@ class data_tables():
         """
         if not table_name or table_name == "":
             print("Table name cannot be null or empty.")
-            return None
+            return False
 
         try:
             session = self.create_session()
@@ -244,12 +244,15 @@ class data_tables():
         """
         if not table_name or table_name == "":
             print("Table name cannot be null or empty.")
-            return None
+            return False
 
         try:
             session = self.create_session()
             stmt, args = dbutils.create_update(table_name=table_name, template=template,
                                                changed_cols=new_values)
+
+            # res = pd.read_sql_query(stmt, self._engine, params=args)
+            # self.commit_and_close_session(session)
             cur = self._cnx.cursor()
             cur.execute(stmt, args)
             # res = pd.read_sql_query(stmt, con=self._cnx, params=args)
@@ -357,6 +360,30 @@ class data_tables():
         try:
             session = self.create_session()
             session.add(new_order)
+            self.commit_and_close_session(session)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def delete_info(self, table_name, template):
+        """ Delete an entry for a table
+
+        Args:
+            table_name: The name of the table
+            template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
+                            It defines which matching rows to update.
+
+        return:
+            True if successfully delete info. False otherwise.
+        """
+        if not table_name or table_name == "":
+            print("Table name cannot be null or empty.")
+            return False
+        try:
+            session = self.create_session()
+            stmt, args = dbutils.create_select(table_name=table_name, template=template, is_select=False)
+            pd.read_sql_query(stmt, self._engine, params=args)
             self.commit_and_close_session(session)
             return True
         except Exception as e:

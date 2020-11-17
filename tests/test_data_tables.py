@@ -1,5 +1,5 @@
 from unittest import TestCase
-import data_tables as dts
+from src import data_tables as dts
 import pymysql
 import json
 
@@ -103,20 +103,23 @@ class Testdata_tables(TestCase):
         self.assertEqual(data[0]["order_id"], "1")
 
     def test_update_info(self):
-        table_name = "sys.User_info"
-        template = {"uni": "wl2750"}
-        new_values = {"email": "123asd@columbia.edu",
-                      "phone_number": "7029129121"}
-        self.tables.update_info(table_name=table_name, template=template,
+        print("Start")
+        table_name = "Addresses"
+        template = {"address_id": "1"}
+        new_values = {"city": "NJ",
+                      "zipcode": "12345"}
+        res = self.tables.update_info(table_name=table_name, template=template,
                                 new_values=new_values)
-
+        if res:
+            print("ok")
         # Query
         res = self.tables.get_info(table_name=table_name, template=template)
         res = res.to_json(orient="table")
         parsed = json.loads(res)
         data = parsed['data']
-        self.assertEqual(data[0]["email"], "123asd@columbia.edu")
-        self.assertEqual(data[0]["phone_number"], "7029129121")
+        print(data)
+
+
 
     def test_add_user_info(self):
         new_user = {"uni": "sa1234",
@@ -143,12 +146,12 @@ class Testdata_tables(TestCase):
 
     def test_add_address(self):
         new_address = {"address_id": "4",
-                     "uni": "sa1234",
-                     "country": "USA",
-                     "state": "NY",
-                     "city": "NEW YORK",
-                     "address": "102 ST ",
-                     "zipcode": "12345" }
+                       "uni": "sa1234",
+                       "country": "USA",
+                       "state": "NY",
+                       "city": "NEW YORK",
+                       "address": "102 ST ",
+                       "zipcode": "12345"}
 
         self.tables.add_address(new_address)
 
@@ -163,3 +166,16 @@ class Testdata_tables(TestCase):
         self.assertEqual(data[0]["uni"], "sa1234")
         self.assertEqual(data[0]["country"], "USA")
         self.assertEqual(data[0]["address_id"], 4)
+
+
+    def test_delete_info(self):
+        table_name = "Addresses"
+        template = {"address_id": "4"}
+        res = self.tables.delete_info(table_name=table_name, template=template)
+        if res:
+            res = res.to_json(orient="table")
+            parsed = json.loads(res)
+            data = parsed['data']
+            print(json.dumps(data, indent=4))
+            self.assertEqual(data[0]["address_id"], 2)
+        print("ok")
