@@ -37,6 +37,21 @@ def get_sql_from_file(file_name=None):
 
 def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, commit=True):
 
+    """ Run multiple sql statements.
+
+    Execute multiple sql statmenets from a list.
+
+    Args:
+        statements (list): A list of sql statements
+        fetch (boolean): Execute a fetch and return data if TRUE.
+        cur: The cursor to use.
+        conn: The database connection to use. This cannot be NULL, unless a cursor is passed.
+        commit (boolean): Whether to commit or not after execution.
+    return:
+         A pair of the form (execute response, fetched data). There will only be fetched data if
+        the fetch parameter is True. 'execute response' is the return from the connection.execute, which
+        is typically the number of rows effected.
+    """
     try:
         if conn is None:
             raise ValueError("Connection cannot be None.")
@@ -54,7 +69,7 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
             data = cur.fetchall()
         else:
             data = None
-        if commit == True:
+        if commit:
             conn.commit()
     except Exception as e:
         raise(e)
@@ -79,7 +94,7 @@ def template_to_where_clause(template):
     """ Converts a dictionary to a WHERE clause
 
     Args:
-        template: One of those weird templates
+        template: A dictionary of the form { "field1" : value1, "field2": value2, ...}
     return
         result (string): WHERE clause corresponding to the template.
     """
@@ -87,11 +102,11 @@ def template_to_where_clause(template):
     if template is None or template == {}:
         result = ("", None)
     else:
-        args = []
-        terms = []
-        for k,v in template.items():
+        terms, args = [], []
+        for k, v in template.items():
             terms.append(" " + k + "=%s ")
             args.append(v)
+
         w_clause = "AND".join(terms)
         w_clause = " WHERE " + w_clause
         result = (w_clause, args)
@@ -109,8 +124,9 @@ def create_select(table_name, template, fields=None, order_by=None, limit=None, 
         limit (int): Select a limited number of records.
         offset (int): Specifies the number of rows to skip before starting to return rows from the query.
         order_by (list): a list of column names used to sort the result-set
+        is_select (boolean): Switch between a select statement and a delete statement
     return:
-        A tuple of the form (sql string, args), where the sql string is a template.
+        A tuple of the form (sql string, args), where the sql string is a query statement string
     """
     if is_select:
         if fields is None:
@@ -122,7 +138,35 @@ def create_select(table_name, template, fields=None, order_by=None, limit=None, 
 
     w_clause, args = template_to_where_clause(template)
     if is_select:
-        sql = "select " + field_list + " from " +  table_name + " " + w_clause
+        sql = "select " + field_list + " from " + table_name + " " + w_clause
     else:
         sql = "delete from " + table_name + " " + w_clause
     return (sql, args)
+
+
+def create_update(table_name, template, changed_cols):
+    """ Produce an update statement: sql string and args.
+
+    Args:
+        table_name(str): Table name: May be fully qualified dbname.tablename or just tablename.
+        template (dict): A dictionary of the form { "field1" : value1, "field2": value2, ...}
+        changed_cols (dict): A dictionary of column fields of the form, { "field1" : value1, "field2": value2, ...}
+
+    return:
+        A tuple of the form (sql string, args), where the sql string is a query statement string.
+    """
+
+    sql = "update " + table_name + " "
+
+    set_terms, args = [], []
+
+    for k, v in changed_cols.items():
+        args.append(v)
+        set_terms.append(k + "=%s")
+
+    set_terms = ",".join(set_terms)
+    set_clause = " set " + set_terms
+    w_clause, args2 = template_to_where_clause(template)
+    sql += set_clause + " " + w_clause
+    args.extend(args2)
+    return sql, args

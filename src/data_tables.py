@@ -1,9 +1,13 @@
+import pickle
 from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import create_engine, text
+from sqlalchemy.sql import select, insert, update
 import pymysql
 import pandas as pd
-import dbutils
+from utils import dbutils
+import os
 
 # Makes print look better the RDBDataTable rows a little better.
 pd.set_option('display.width', 256)
@@ -46,48 +50,112 @@ class data_tables():
                                                                     password=self._connect_info['password'],
                                                                     host=self._connect_info['host'],
                                                                     db_name=self._connect_info['db']))
-        # reflect the tables
+        # metadata_file_name = "db_metadata"
+        # cache_path, cached_metadata = "../resources", None
+        # if os.path.exists(cache_path):
+        #     try:
+        #         with open(os.path.join(cache_path, metadata_file_name), 'rb') as cache_file:
+        #             cached_metadata = pickle.load(file=cache_file)
+        #     except IOError:
+        #         #Cache file not found, then we reflect as usual
+        #         pass
+        # if cached_metadata is not None:
+        #     base = declarative_base(bind=self._engine, metadata=cached_metadata)
+        #     self._User_info = base.classes.User_info
+        #     self._Addresses = base.classes.Addresses
+        #     self._Listings = base.classes.Listings
+        #     self._Order_info = base.classes.Order_info
+        # else:
+        #reflect the tables
         self.Base.prepare(self._engine, reflect=True)
         self._User_info = self.Base.classes.User_info
         self._Addresses = self.Base.classes.Addresses
         self._Listings = self.Base.classes.Listings
         self._Order_info = self.Base.classes.Order_info
+        #     try:
+        #         if not os.path.exists(cache_path):
+        #             os.makedirs(cache_path)
+        #         # make sure to open in binary mode since we're writing bytes.
+        #         with open(os.path.join(cache_path, metadata_file_name), 'wb') as cache_file:
+        #             pickle.dump(self.Base.metadata, cache_file)
+        #     except:
+        #         # couldn't write the file for some reason
+        #         pass
+
         self._tables = [self._User_info, self._Addresses, self._Listings, self._Order_info]
+        self._key_cols = None
+        self.get_key_cols()
 
         #Create session
         self._Session = sessionmaker(bind=self._engine)
 
+    def get_key_cols(self):
+        """ Create a dictionary of key columns for each table.
+
+        return:
+              a dictionary object.
+        """
+        if self._key_cols:
+            return self._key_cols
+
+        self._key_cols = dict()
+        for table in self._tables:
+            l = [str(primary_key).split(".")[1] for primary_key in table.__table__.primary_key]
+            self._key_cols[table.__table__.name] = l
+
+        return self._key_cols
+
     def create_session(self):
+        """ Create a new session
+
+        return:
+              a new session object.
+        """
         new_session = self._Session()
         return new_session
 
     def commit_and_close_session(self, cur_session):
+        """ Commit and close a session.
+
+        return:
+              None
+        """
         cur_session.commit()
         cur_session.close()
 
-    def print_tables(self):
+    def __str__(self):
         """ ToString method
 
         Print information of the data tables.
 
-            return:
-                None
+        return:
+              a string representation of all tables.
         """
+        result = ""
         for table in self._tables:
-            print("DataTable: ")
-            print("Table name: " + table.__table__.name)
-            print("Database name: " + self._connect_info['db'])
-            print("Key columns: ", [str(primary_key).split(".")[1] for primary_key in table.__table__.primary_key])
-            print("Number of rows: " + str(self.get_row_count(table)) + " row(s)")
-            print("A few sample rows:")
-            print(str(self.get_sample_rows(table)))
-            print()
+            # print("DataTable: ")
+            # print("Table name: " + table.__table__.name)
+            # print("Database name: " + self._connect_info['db'])
+            # print("Key columns: ", self._key_cols[table.__table__.name])
+            # print("Number of rows: " + str(self.get_row_count(table)) + " row(s)")
+            # print("A few sample rows:")
+            # print(str(self.get_sample_rows(table)))
+            # print()
+            result += "DataTable: "
+            result += "\nTable name: {}".format( table.__table__.name)
+            result += "\nDatabase name: {}".format(self._connect_info['db'])
+            result += "\nTable type: {}".format(str(type(self)))
+            result += "\nKey columns: {}".format(str(self._key_cols[table.__table__.name]))
+            result += "\nNumber of rows: {} {}".format(str(self.get_row_count(table)), "row(s)")
+            result += "\nA few sample rows: \n" + str(self.get_sample_rows(table))
+            result += "\n \n \n"
+        return result
 
     def get_row_count(self, table):
         """ Get the number of rows in the table.
 
         return:
-            Returns the count of the number of rows in the table.
+              Returns the count of the number of rows in the table.
         """
         session = self.create_session()
         row_count = session.query(table).count()
@@ -104,33 +172,21 @@ class data_tables():
         return:
             A Pandas dataframe containing the first _row_to_print number of rows.
         """
-        query = "select * from " + table.__table__.name + " limit " \
-                                + str(number_rows)
-        res = pd.read_sql(query, self._cnx)
+
+        session = self.create_session()
+        res = pd.read_sql(session.query(table).limit(number_rows).statement, self._engine)
+        self.commit_and_close_session(session)
         return res
 
-    def get_info(self, table, template=None):
-        """ Query the User_info table
+    def get_table_class(self, table_name):
+        """ Get a table Class
 
         Args:
-            table: A table class object
-            template (dict): A dictionary of the form { "field1" : value1, "field2": value2, ...}
+            table_name (str): The name of the table
 
         return:
-            None
+            A SQLAlchemy table class
         """
-        # session = self.create_session()
-        # sql, _ = dbutils.create_select(table_name=table.__table__.name,
-        #                                template=template)
-        # stmt = text(sql)
-
-        #Ignore above
-        query = "select * from " + table.__table__.name
-        res = pd.read_sql(query, self._cnx)
-        return res
-
-    def get_table(self, table_name):
-
         if table_name == "user_info":
             return self._User_info
 
@@ -143,26 +199,62 @@ class data_tables():
         elif table_name == "order_info":
             return self._Order_info()
 
-    def update_info(self, table, user_info):
-        pass
+    def get_info(self, table_name, template):
+        """ Query the User_info table
 
+        Args:
+            table_name: The name of the table
+            template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
 
+        return:
+            A Pandas dataframe containing the query result
+        """
+        if not table_name or table_name == "":
+            raise("Table name cannot be null or empty.")
+        session = self.create_session()
+        stmt, args = dbutils.create_select(table_name=table_name, template=template)
+        res = pd.read_sql_query(stmt, self._engine, params=args)
+        self.commit_and_close_session(session)
+
+        return res
+
+    def update_info(self, table_name, template, new_values):
+        """ Query the User_info table
+
+        Args:
+            table_name: The name of the table
+            template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
+                            It defines which matching rows to update.
+            new_values (dict): A dictionary containing fields and the values to set for the
+                            corresponding fields in the records.
+        return:
+            None
+        """
+        if not table_name or table_name == "":
+            raise("Table name cannot be null or empty.")
+        session = self.create_session()
+        stmt, args = dbutils.create_update(table_name=table_name, template=template,
+                                     changed_cols=new_values)
+        cur = self._cnx.cursor()
+        cur.execute(stmt, args)
+        # res = pd.read_sql_query(stmt, con=self._cnx, params=args)
+        self._cnx.commit()
+        self.commit_and_close_session(session)
 
     def add_user_info(self, info):
         """ Add a new entry to the database
 
         Args:
             info (dict): A dictionary representation of the user to be added.
-
+a
         return:
             None
         """
-        # info = dbutils.parse_str_for_db(new_user_info, "user_info")
-        new_user= self._User_info(uni=info["uni"],
-                                  user_name=info["user_name"],
-                                  email=info["email"],
-                                  phone_number=info["phone_number"],
-                                  credential=info["credential"])
+        new_user = self._User_info(uni=info["uni"],
+                                   user_name=info["user_name"],
+                                   email=info["email"],
+                                   phone_number=info["phone_number"],
+                                   credential=info["credential"])
 
         session = self.create_session()
         session.add(new_user)
@@ -176,8 +268,7 @@ class data_tables():
         return:
             None
         """
-        # info = dbutils.parse_str_for_db(new_address_info, "addresses")
-        new_address= self._Addresses(address_id=info["address_id"],
+        new_address = self._Addresses(address_id=info["address_id"],
                                   uni=info["uni"],
                                   country=info["country"],
                                   state=info["state"],
@@ -198,8 +289,7 @@ class data_tables():
         return:
             None
         """
-        # info = dbutils.parse_str_for_db(new_listing_info, "listings")
-        new_listing= self._Listings(listing_id=info["listing_id"],
+        new_listing = self._Listings(listing_id=info["listing_id"],
                                   isbn=info["isbn"],
                                   uni=info["uni"],
                                   title=info["title"],
@@ -224,7 +314,6 @@ class data_tables():
         return:
             None
         """
-        # info = dbutils.parse_str_for_db(new_order_info, "listings")
         new_order = self._Order_info(order_id=info["order_id"],
                                   buyer_uni=info["buyer_uni"],
                                   seller_uni=info["seller_uni"],
