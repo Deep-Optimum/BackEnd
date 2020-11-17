@@ -18,24 +18,23 @@ def search():
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
             else:
-                pass
+                rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
         elif "title" in query_type:
             template = {"title": request.args.get("title")}
-            res, is_success= tables.get_info("Listings", template)
+            res, is_success = tables.get_info("Listings", template)
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
             else:
-                pass
+                rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
         elif "subject" in query_type:
             template = {"category": request.args.get("subject")}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
-
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
             else:
-                pass
+                rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
     except Exception as e:
         print(e)
@@ -65,24 +64,28 @@ def post_by_id(listing_id):
     try:
         if request.method == 'PUT':
             body = json.loads(request.data)
-            template = {listing_id: request.args.get(listing_id)}
+            template = {'listing_id': listing_id}
             is_updated = tables.update_info("Listings", template, body)
             if is_updated:
                 rsp = Response('Post updated', status=200, content_type='text/plain')
             else:
-                #somethign else
-                pass
+                rsp = Response("Update unsuccessful", status=200, content_type='text/plain')
             return rsp
         elif request.method == 'DELETE':
-
-            return
+            template = {'listing_id': listing_id}
+            is_deleted = tables.delete_info("Listings", template)
+            if is_deleted:
+                rsp = Response('Post deleted', status=200, content_type='text/plain')
+            else:
+                rsp = Response("Delete unsuccessful", status=200, content_type='text/plain')
+            return rsp
         elif request.method == "GET":
-            template = {listing_id: request.args.get(listing_id)}
+            template = {'listing_id': listing_id}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
             else:
-                pass
+                rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
     except Exception as e:
         print(e)
@@ -97,6 +100,8 @@ def create_user():
         is_added = tables.add_user_info(body)
         if is_added:
             rsp = Response('New user added', status=200, content_type='text/plain')
+        else:
+            rsp = Response("Add unsuccessful", status=200, content_type='text/plain')
         return rsp
     except Exception as e:
         print(e)
@@ -107,12 +112,12 @@ def create_user():
 @app.route('/users/<uni>/listings', methods=['GET'])
 def get_user_posts(uni):
     try:
-        template = {uni: request.args.get(uni)}
+        template = {'uni': uni}
         res, is_success = tables.get_info("Listings", template)
         if is_success:
             rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
         else:
-            pass
+            rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
         return rsp
     except Exception as e:
         print(e)
@@ -124,21 +129,21 @@ def get_user_posts(uni):
 def user_by_uni(uni):
     try:
         if request.method == 'GET':
-            template = {uni: request.args.get(uni)}
+            template = {'uni': uni}
             res, is_success = tables.get_info("User_info", template)
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
             else:
-                pass
+                rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
         elif request.method == 'PUT':
             body = json.loads(request.data)
-            template = {uni: request.args.get(uni)}
+            template = {'uni': uni}
             is_updated = tables.update_info("User_info", template, body)
             if is_updated:
                 rsp = Response('Post updated', status=200, content_type='text/plain')
             else:
-                pass
+                rsp = Response("Update unsuccessful", status=200, content_type='text/plain')
             return rsp
     except Exception as e:
         print(e)
@@ -148,32 +153,126 @@ def user_by_uni(uni):
 
 @app.route('/users/<uni>/address', methods=['GET'])
 def user_address(uni):
-    return
+    try:
+        template = {'uni': uni}
+        res, is_success = tables.get_info("Addresses", template)
+        if is_success:
+            rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+        else:
+            rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
+        return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
 
 
 @app.route('/users/<uni>/orders', methods=['GET'])
 def user_orders(uni):
-    return
+    try:
+        template = {'uni': uni}
+        res, is_success = tables.get_info("Order_info", template)
+        if is_success:
+            rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+        else:
+            rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
+        return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
 
 
 @app.route('/addresses', methods=['POST'])
 def create_address():
-    return
+    try:
+        body = json.loads(request.data)
+        is_added = tables.add_address(body)
+        if is_added:
+            rsp = Response('New address added', status=200, content_type='text/plain')
+        else:
+            rsp = Response("Add unsuccessful", status=200, content_type='text/plain')
+        return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
 
 
 @app.route('/addresses/<address_id>', methods=['PUT', 'DELETE'])
 def address_by_id(address_id):
-    return
+    try:
+        if request.method == 'PUT':
+            body = json.loads(request.data)
+            template = {'address_id': address_id}
+            is_updated = tables.update_info("Addresses", template, body)
+            if is_updated:
+                rsp = Response('Address updated', status=200, content_type='text/plain')
+            else:
+                rsp = Response("Update unsuccessful", status=200, content_type='text/plain')
+            return rsp
+        elif request.method == 'DELETE':
+            template = {'address_id': address_id}
+            is_deleted = tables.delete_info("Addresses", template)
+            if is_deleted:
+                rsp = Response('Address deleted', status=200, content_type='text/plain')
+            else:
+                rsp = Response("Delete unsuccessful", status=200, content_type='text/plain')
+            return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
 
 
 @app.route('/orders', methods=['POST'])
 def create_order():
-    return
+    try:
+        body = json.loads(request.data)
+        is_added = tables.add_order_info(body)
+        if is_added:
+            rsp = Response('New order added', status=200, content_type='text/plain')
+        else:
+            rsp = Response("Add unsuccessful", status=200, content_type='text/plain')
+        return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
 
 
 @app.route('/orders/<order_id>', methods=['GET', 'PUT', 'DELETE'])
 def order_by_id(order_id):
-    return
+    try:
+        if request.method == 'PUT':
+            body = json.loads(request.data)
+            template = {'order_id': order_id}
+            is_updated = tables.update_info("Order_info", template, body)
+            if is_updated:
+                rsp = Response('Order updated', status=200, content_type='text/plain')
+            else:
+                rsp = Response("Update unsuccessful", status=200, content_type='text/plain')
+            return rsp
+        elif request.method == 'DELETE':
+            template = {'order_id': order_id}
+            is_deleted = tables.delete_info("Order_info", template)
+            if is_deleted:
+                rsp = Response('Order deleted', status=200, content_type='text/plain')
+            else:
+                rsp = Response("Delete unsuccessful", status=200, content_type='text/plain')
+            return rsp
+        elif request.method == "GET":
+            template = {'order_id': order_id}
+            res, is_success = tables.get_info("Order_info", template)
+            if is_success:
+                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+            else:
+                rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
+            return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
 
 
 if __name__ == '__main__':
