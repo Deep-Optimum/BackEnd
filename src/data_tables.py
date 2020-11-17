@@ -1,13 +1,9 @@
-import pickle
 from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy import create_engine, text
-from sqlalchemy.sql import select, insert, update
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
 from utils import dbutils
-import os
 
 # Makes print look better the RDBDataTable rows a little better.
 pd.set_option('display.width', 256)
@@ -46,10 +42,10 @@ class data_tables():
             raise Exception("Could not get a connection.")
 
         self._engine = create_engine('mysql+pymysql://{username}:'
-                               '{password}@{host}/{db_name}'.format(username=self._connect_info['user'],
-                                                                    password=self._connect_info['password'],
-                                                                    host=self._connect_info['host'],
-                                                                    db_name=self._connect_info['db']))
+                '{password}@{host}/{db_name}'.format(username=self._connect_info['user'],
+                                                     password=self._connect_info['password'],
+                                                     host=self._connect_info['host'],
+                                                     db_name=self._connect_info['db']))
         # metadata_file_name = "db_metadata"
         # cache_path, cached_metadata = "../resources", None
         # if os.path.exists(cache_path):
@@ -100,8 +96,9 @@ class data_tables():
 
         self._key_cols = dict()
         for table in self._tables:
-            l = [str(primary_key).split(".")[1] for primary_key in table.__table__.primary_key]
-            self._key_cols[table.__table__.name] = l
+            keys_list = [str(primary_key).split(".")[1] for
+                         primary_key in table.__table__.primary_key]
+            self._key_cols[table.__table__.name] = keys_list
 
         return self._key_cols
 
@@ -190,14 +187,14 @@ class data_tables():
         if table_name == "user_info":
             return self._User_info
 
-        elif table_name == "addresses":
+        if table_name == "addresses":
             return self._Addresses
 
-        elif table_name == "listing":
+        if table_name == "listing":
             return self._Listings
 
-        elif table_name == "order_info":
-            return self._Order_info()
+        if table_name == "order_info":
+            return self._Order_info
 
     def get_info(self, table_name, template):
         """ Query the User_info table
@@ -211,6 +208,7 @@ class data_tables():
         """
         if not table_name or table_name == "":
             raise("Table name cannot be null or empty.")
+
         session = self.create_session()
         stmt, args = dbutils.create_select(table_name=table_name, template=template)
         res = pd.read_sql_query(stmt, self._engine, params=args)
@@ -231,7 +229,7 @@ class data_tables():
             None
         """
         if not table_name or table_name == "":
-            raise("Table name cannot be null or empty.")
+            raise("Table name cannot be null or empty")
         session = self.create_session()
         stmt, args = dbutils.create_update(table_name=table_name, template=template,
                                      changed_cols=new_values)
