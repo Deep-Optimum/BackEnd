@@ -267,7 +267,7 @@ class data_tables():
             info (dict): A dictionary representation of the user to be added.
 
         return:
-            True if successfully added uer info. False otherwise.
+            True if successfully added uer info. False otherwise
         """
         new_user = self._User_info(uni=info["uni"],
                                    user_name=info["user_name"],
