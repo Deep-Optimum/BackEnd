@@ -6,6 +6,8 @@ from src.data_tables import data_tables
 app = Flask(__name__)
 
 tables = data_tables()
+_host = "127.0.0.1"
+_port = 5000
 
 
 @app.route('/books', methods=['GET'])
@@ -13,7 +15,7 @@ def search():
     query_type = request.args.keys()
     try:
         if "isbn" in query_type:
-            template = {"isbn": request.args.get("isbn")}
+            template = {"isbn": request.args.get("isbn").lower()}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
@@ -21,7 +23,7 @@ def search():
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
         elif "title" in query_type:
-            template = {"title": request.args.get("title")}
+            template = {"title": request.args.get("title").lower()}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
@@ -29,7 +31,7 @@ def search():
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
         elif "subject" in query_type:
-            template = {"category": request.args.get("subject")}
+            template = {"category": request.args.get("subject").lower()}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
                 rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
@@ -151,7 +153,7 @@ def user_by_uni(uni):
         return rsp
 
 
-@app.route('/users/<uni>/address', methods=['GET'])
+@app.route('/users/<uni>/addresses', methods=['GET'])
 def user_address(uni):
     try:
         template = {'uni': uni}
@@ -276,4 +278,4 @@ def order_by_id(order_id):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host=_host, port=_port)
