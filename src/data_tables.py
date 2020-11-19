@@ -218,17 +218,17 @@ class data_tables():
         """
         if not table_name or table_name == "":
             print("Table name cannot be null or empty.")
-            return False
+            return None, False
 
         try:
             session = self.create_session()
             stmt, args = dbutils.create_select(table_name=table_name, template=template)
             res = pd.read_sql_query(stmt, self._engine, params=args)
             self.commit_and_close_session(session)
-            return res
+            return res, True
         except Exception as e:
             print(e)
-            return None
+            return None, False
 
     def update_info(self, table_name, template, new_values):
         """ Query the User_info table
