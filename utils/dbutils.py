@@ -76,20 +76,6 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
 
     return (res, data)
 
-
-def parse_str_for_db(string, table_name):
-
-    # res = defaultdict(str)
-    # if table_name == "user_info":
-    #
-    # elif table_name == "addresses":
-    #
-    # elif table_name == "listing":
-    #
-    # elif table_name == "order_info":
-    #     pass
-    pass
-
 def template_to_where_clause(template):
     """ Converts a dictionary to a WHERE clause
 

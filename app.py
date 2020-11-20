@@ -12,29 +12,31 @@ _port = 5000
 
 @app.route('/books', methods=['GET'])
 def search():
-    query_type = request.args.keys()
     try:
-        if "isbn" in query_type:
+        if "isbn" in request.args:
             template = {"isbn": request.args.get("isbn").lower()}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
-                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+                data = json.loads(res.to_json(orient="table"))["data"]
+                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
-        elif "title" in query_type:
+        elif "title" in request.args:
             template = {"title": request.args.get("title").lower()}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
-                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+                data = json.loads(res.to_json(orient="table"))["data"]
+                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
-        elif "subject" in query_type:
+        elif "subject" in request.args:
             template = {"category": request.args.get("subject").lower()}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
-                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+                data = json.loads(res.to_json(orient="table"))["data"]
+                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
@@ -52,7 +54,7 @@ def create_new_post():
         if is_added:
             rsp = Response('New post added', status=200, content_type='text/plain')
         else:
-            #rsp
+            rsp = Response("Add unsuccessful", status=200, content_type='text/plain')
             pass
         return rsp
     except Exception as e:
@@ -85,7 +87,8 @@ def post_by_id(listing_id):
             template = {'listing_id': listing_id}
             res, is_success = tables.get_info("Listings", template)
             if is_success:
-                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+                data = json.loads(res.to_json(orient="table"))["data"]
+                rsp = Response(json.dumps(data), status=200, content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
@@ -117,7 +120,9 @@ def get_user_posts(uni):
         template = {'uni': uni}
         res, is_success = tables.get_info("Listings", template)
         if is_success:
-            rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+            data = json.loads(res.to_json(orient="table"))["data"]
+            print("data", data)
+            rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
         return rsp
@@ -134,7 +139,8 @@ def user_by_uni(uni):
             template = {'uni': uni}
             res, is_success = tables.get_info("User_info", template)
             if is_success:
-                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+                data = json.loads(res.to_json(orient="table"))["data"]
+                rsp = Response(json.dumps(data), status=200, content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
@@ -159,7 +165,8 @@ def user_address(uni):
         template = {'uni': uni}
         res, is_success = tables.get_info("Addresses", template)
         if is_success:
-            rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+            data = json.loads(res.to_json(orient="table"))["data"]
+            rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
         return rsp
@@ -172,10 +179,11 @@ def user_address(uni):
 @app.route('/users/<uni>/orders', methods=['GET'])
 def user_orders(uni):
     try:
-        template = {'uni': uni}
+        template = {'seller_uni': uni}
         res, is_success = tables.get_info("Order_info", template)
         if is_success:
-            rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+            data = json.loads(res.to_json(orient="table"))["data"]
+            rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
         return rsp
@@ -267,7 +275,8 @@ def order_by_id(order_id):
             template = {'order_id': order_id}
             res, is_success = tables.get_info("Order_info", template)
             if is_success:
-                rsp = Response(res.to_json(orient="table"), status=200, content_type="application/json")
+                data = json.loads(res.to_json(orient="table"))["data"]
+                rsp = Response(json.dumps(data), status=200, content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
             return rsp
@@ -278,4 +287,5 @@ def order_by_id(order_id):
 
 
 if __name__ == '__main__':
+    app.debug = True
     app.run(host=_host, port=_port)

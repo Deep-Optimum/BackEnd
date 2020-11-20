@@ -29,6 +29,7 @@ CREATE TABLE `Addresses` (
   CONSTRAINT `address_uni` FOREIGN KEY (`uni`) REFERENCES `User_info` (`uni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
 CREATE TABLE `Listings` (
   `listing_id` varchar(10) NOT NULL,
   `isbn` varchar(15) NOT NULL,
@@ -39,12 +40,12 @@ CREATE TABLE `Listings` (
   `description` mediumtext NOT NULL,
   `image_url` varchar(256) NOT NULL,
   `is_sold` tinyint(1) NOT NULL,
-  PRIMARY KEY (`listing_id`,`isbn`),
+  PRIMARY KEY (`listing_id`),
   UNIQUE KEY `post_ID_UNIQUE` (`listing_id`),
-  UNIQUE KEY `uni_UNIQUE` (`uni`),
-  UNIQUE KEY `ISBN_UNIQUE` (`isbn`),
-  CONSTRAINT `listing_uni` FOREIGN KEY (`uni`) REFERENCES `User_info` (`uni`)
+  KEY `uni_idx` (`uni`),
+  CONSTRAINT `uni` FOREIGN KEY (`uni`) REFERENCES `User_info` (`uni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 CREATE TABLE `Order_info` (
   `order_id` varchar(10) NOT NULL,
@@ -55,9 +56,9 @@ CREATE TABLE `Order_info` (
   `status` enum('Completed','In progress','Canceled') NOT NULL,
   PRIMARY KEY (`order_id`),
   UNIQUE KEY `order_ID_UNIQUE` (`order_id`),
-  UNIQUE KEY `seller_uni_UNIQUE` (`seller_uni`),
-  UNIQUE KEY `buyer_uni_UNIQUE` (`buyer_uni`),
   KEY `listing_id_idx` (`listing_id`),
+  KEY `buyer_uni_idx` (`buyer_uni`),
+  KEY `seller_uni_idx` (`seller_uni`),
   CONSTRAINT `buyer_uni` FOREIGN KEY (`buyer_uni`) REFERENCES `User_info` (`uni`),
   CONSTRAINT `listing_id` FOREIGN KEY (`listing_id`) REFERENCES `Listings` (`listing_id`),
   CONSTRAINT `seller_uni` FOREIGN KEY (`seller_uni`) REFERENCES `User_info` (`uni`)

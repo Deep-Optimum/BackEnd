@@ -194,16 +194,16 @@ class data_tables():
         return:
             A SQLAlchemy table class
         """
-        if table_name == "user_info":
+        if table_name == "User_info":
             return self._User_info
 
-        if table_name == "addresses":
+        if table_name == "Addresses":
             return self._Addresses
 
-        if table_name == "listing":
+        if table_name == "Listing":
             return self._Listings
 
-        if table_name == "order_info":
+        if table_name == "Order_info":
             return self._Order_info
 
     def get_info(self, table_name, template):
@@ -214,7 +214,9 @@ class data_tables():
             template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
 
         return:
-            A Pandas dataframe containing the query result if successful. Otherwise None.
+            a tuple (res. boolean)
+            If success, aPandas dataframe containing the query result (a list of dictionaries)
+             and true. Otherwise None, false
         """
         if not table_name or table_name == "":
             print("Table name cannot be null or empty.")
@@ -383,7 +385,10 @@ class data_tables():
         try:
             session = self.create_session()
             stmt, args = dbutils.create_select(table_name=table_name, template=template, is_select=False)
-            pd.read_sql_query(stmt, self._engine, params=args)
+            # res = pd.read_sql_query(stmt, self._engine, params=args)
+            cur = self._cnx.cursor()
+            cur.execute(stmt, args)
+            self._cnx.commit()
             self.commit_and_close_session(session)
             return True
         except Exception as e:
