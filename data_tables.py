@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
-from utils import dbutils as dbutils
+import dbutils as dbutils
 
 # Makes print look better the RDBDataTable rows a little better.
 pd.set_option('display.width', 256)
@@ -144,7 +144,7 @@ class data_tables():
             result += "\nTable type: {}".format(str(type(self)))
             result += "\nKey columns: {}".format(str(self._key_cols[table.__table__.name]))
             result += "\nNumber of rows: {} {}".format(str(self.get_row_count(table)), "row(s)")
-            result += "\nA few sample rows: \n" + str(self.get_sample_rows(table))
+            result += "\nA few sample rows: \n" + str(self.get_sample_rows(table)[0])
             result += "\n \n \n"
         return result
 

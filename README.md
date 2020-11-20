@@ -8,9 +8,9 @@ To install requirements:
 ```sh
 pip install -r requirements.txt
 ```
-To run:
+
+To compile all tests:
+
 ```sh
-python3 app.py
+coverage run -m unittest discover
 ```
-
-

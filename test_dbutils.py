@@ -1,6 +1,6 @@
 from unittest import TestCase
 import pymysql
-from utils import dbutils
+import dbutils
 
 
 class Test(TestCase):
@@ -23,24 +23,24 @@ class Test(TestCase):
         self.assertIsNotNone(conn)
 
     def test_get_sql_from_file(self):
-        path = "../resources/schema.sql"
+        path = "./schema.sql"
         result = dbutils.get_sql_from_file(path)
         self.assertEqual(len(result), 8)
 
     def test_get_sql_from_Non_exist_file(self):
-        path = "./schemas.sql"
+        path = "/src/schemas.sql"
         result = dbutils.get_sql_from_file(path)
         self.assertEqual(result, None)
 
     def test_run_multiple_sql_statements(self):
-        path = "../resources/schema.sql"
+        path = "./schema.sql"
         result = dbutils.get_sql_from_file(path)
         res, data = dbutils.run_multiple_sql_statements(result, conn=self._cnx, commit=True, fetch=True)
         self.assertEqual(res, 0)
 
     def test_run_multiple_sql_statements_no_conn(self):
 
-        path = "../resources/schema.sql"
+        path = "schema.sql"
         result = dbutils.get_sql_from_file(path)
         with self.assertRaises(ValueError) as context:
             dbutils.run_multiple_sql_statements(result, conn=None, commit=True, fetch=True)
@@ -48,7 +48,7 @@ class Test(TestCase):
 
     def test_run_multiple_sql_statements_no_statement(self):
 
-        path = "../resources/schema.sql"
+        path = "schema.sql"
         result = dbutils.get_sql_from_file(path)
         with self.assertRaises(ValueError) as context:
             dbutils.run_multiple_sql_statements(None, conn=self._cnx, commit=True, fetch=True)

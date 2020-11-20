@@ -1,6 +1,5 @@
 import pymysql
 import logging
-from collections import defaultdict
 from os import path
 
 logger = logging.getLogger()

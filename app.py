@@ -1,14 +1,13 @@
 from flask import Flask, request, Response
 import json
 
-from src.data_tables import data_tables
+from data_tables import data_tables
 
 app = Flask(__name__)
 
 tables = data_tables()
 _host = "127.0.0.1"
 _port = 5000
-
 
 @app.route('/books', methods=['GET'])
 def search():
