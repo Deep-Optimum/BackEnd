@@ -9,6 +9,7 @@ tables = data_tables()
 _host = "127.0.0.1"
 _port = 5000
 
+
 @app.route('/books', methods=['GET'])
 def search():
     try:
@@ -178,7 +179,7 @@ def user_address(uni):
 @app.route('/users/<uni>/orders', methods=['GET'])
 def user_orders(uni):
     try:
-        template = {'seller_uni': uni}
+        template = {'buyer_uni': uni}
         res, is_success = tables.get_info("Order_info", template)
         if is_success:
             data = json.loads(res.to_json(orient="table"))["data"]
