@@ -12,9 +12,9 @@ pd.set_option('display.max_columns', 12)
 class data_tables():
 
     _default_connect_info = {
-        'host': 'localhost',
+        'host': '127.0.0.1',
         'user': 'root',
-        'password': 'dbuser666',
+        'password': 'screw2020!',
         'db': 'sys',
         'port': 3306
     }

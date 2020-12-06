@@ -1,7 +1,12 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, redirect, url_for, flash, render_template
 import json
+from dotenv import load_dotenv
+import braintree
+from payment import generate_client_token, transact, find_transaction
 
 from data_tables import data_tables
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -9,6 +14,15 @@ tables = data_tables()
 _host = "127.0.0.1"
 _port = 5000
 
+TRANSACTION_SUCCESS_STATUSES = [
+    braintree.Transaction.Status.Authorized,
+    braintree.Transaction.Status.Authorizing,
+    braintree.Transaction.Status.Settled,
+    braintree.Transaction.Status.SettlementConfirmed,
+    braintree.Transaction.Status.SettlementPending,
+    braintree.Transaction.Status.Settling,
+    braintree.Transaction.Status.SubmittedForSettlement
+]
 
 @app.route('/books', methods=['GET'])
 def search():
@@ -250,7 +264,6 @@ def create_order():
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
-
 @app.route('/orders/<order_id>', methods=['GET', 'PUT', 'DELETE'])
 def order_by_id(order_id):
     try:
@@ -285,6 +298,56 @@ def order_by_id(order_id):
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
+# Checkouts
+#@app.route('/checkouts/new', methods=['GET'])
+#def new_checkout():
+#    client_token = generate_client_token()
+#    return client_token
+#    #return render_template('checkouts/new.html', client_token=client_token)
+
+@app.route("/checkouts/<order_id>", methods=['POST'])
+def create_checkout(order_id):
+    #body = json.loads(request.data)
+    template = {'order_id': order_id}
+    res, is_success = tables.get_info("Order_info", template)
+    if is_success:
+        # Order Id in the DB - proceed with transaction
+        amount = float(res["transaction_amt"])
+        result = transact({
+            'amount': amount,
+            'payment_method_nonce': request.form["payment_method_nonce"],
+            'options': {
+                'submit_for_settlement': True
+            }
+        })
+        if result.is_success or result.transaction:
+            return Response("Transaction success", status=200, content_type="text/plain")
+            #return redirect(url_for("show_checkout", transaction_id=result.transaction.id))
+        else:
+            for x in result.errors.deep_errors: flash('Error: %s: %s' % (x.code, x.message))
+            return Response("Transaction failed", status=200, content_type="text/plain")
+            #return redirect(url_for('new_checkout'))
+    else:
+        return Response('Query failed', status=200, content_type='text/plain')
+
+@app.route('/checkouts/<transaction_id>', methods=['GET'])
+def show_checkout(transaction_id):
+    transaction = find_transaction(transaction_id)
+    result = {}
+    if transaction.status in TRANSACTION_SUCCESS_STATUSES:
+        result = {
+            'header': 'Sweet Success!',
+            'icon': 'success',
+            'message': 'Your transaction has been successfully processed. Please coordinate a time with your seller.'
+        }
+    else:
+        result = {
+            'header': 'Transaction Failed',
+            'icon': 'fail',
+            'message': 'Your test transaction has a status of ' + transaction.status + '. Try again.'
+        }
+
+    return render_template('checkouts/show.html', transaction=transaction, result=result)
 
 if __name__ == '__main__':
     app.debug = True
