@@ -86,11 +86,12 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
 
     return (res, data)
 
-def template_to_where_clause(template):
+def template_to_where_clause(template, is_like=False):
     """ Converts a dictionary to a WHERE clause
 
     Args:
-        template: A dictionary of the form { "field1" : value1, "field2": value2, ...}
+        template (dict): A dictionary of the form { "field1" : value1, "field2": value2, ...}
+        is_like (boolean): Switch between a strictly equal statement and a LIKE statement
     return
         result (string): WHERE clause corresponding to the template.
     """
@@ -99,9 +100,14 @@ def template_to_where_clause(template):
         result = ("", None)
     else:
         terms, args = [], []
-        for k, v in template.items():
-            terms.append(" " + k + "=%s ")
-            args.append(v)
+        if not is_like:
+            for k, v in template.items():
+                terms.append(" " + k + "=%s ")
+                args.append(v)
+        else:
+            for k, v in template.items():
+                terms.append(" " + k + " LIKE %s ")
+                args.append(v)
 
         w_clause = "AND".join(terms)
         w_clause = " WHERE " + w_clause
@@ -110,7 +116,8 @@ def template_to_where_clause(template):
     return result
 
 
-def create_select(table_name, template, fields=None, order_by=None, limit=None, offset=None, is_select=True):
+
+def create_select(table_name, template, fields=None, order_by=None, limit=None, offset=None, is_select=True, is_like=False):
     """ Produce a select statement: sql string and args.
 
     Args:
@@ -121,6 +128,7 @@ def create_select(table_name, template, fields=None, order_by=None, limit=None, 
         offset (int): Specifies the number of rows to skip before starting to return rows from the query.
         order_by (list): a list of column names used to sort the result-set
         is_select (boolean): Switch between a select statement and a delete statement
+        is_like (boolean): Switch between a strictly equal statement and a LIKE statement
     return:
         A tuple of the form (sql string, args), where the sql string is a query statement string
     """
@@ -132,7 +140,7 @@ def create_select(table_name, template, fields=None, order_by=None, limit=None, 
     else:
         field_list = None
 
-    w_clause, args = template_to_where_clause(template)
+    w_clause, args = template_to_where_clause(template, is_like)
     if is_select:
         sql = "select " + field_list + " from " + table_name + " " + w_clause
     else:

@@ -181,6 +181,12 @@ def test_get_info_empty_name(my_tables):
     assert is_success is False
     assert res is None
 
+def test_get_info_similar(my_tables):
+    table_name = "User_info"
+    template = {"uni": "%2%"}
+    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_simillar=True)
+    assert is_success is True
+
 def test_update_user(my_tables):
     table_name = "User_info"
     template = {"uni": "wl2750"}

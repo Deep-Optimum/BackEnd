@@ -36,6 +36,7 @@ def test_run_multiple_sql_statements():
     result = dbutils.get_sql_from_file(path)
     res, data = dbutils.run_multiple_sql_statements(result, conn=_cnx, commit=True, fetch=True)
     assert res == 0
+
 def test_run_multiple_sql_statements_no_conn():
     path = "schema.sql"
     result = dbutils.get_sql_from_file(path)
@@ -53,6 +54,12 @@ def test_template_to_where_clause():
     template = {"address_id": "2", "uni": "wl2750"}
     actual = dbutils.template_to_where_clause(template)
     expected = (' WHERE  address_id=%s AND uni=%s ', ['2', 'wl2750'])
+    assert actual == expected
+
+def test_template_to_where_clause_is_like():
+    template = {"uni": "%2%", "email": '%columbia%'}
+    actual = dbutils.template_to_where_clause(template, is_like=True)
+    expected = (' WHERE  uni LIKE %s AND email LIKE %s ', ['%2%', '%columbia%'])
     assert actual == expected
 
 def test_create_select():
@@ -82,3 +89,8 @@ def test_create_update():
     expected = ('update User_info  set email=%s  WHERE  uni=%s ', ['wl2750@columbia.edu', 'wl2750'])
     assert actual == expected
 
+def test_create_select_with_like():
+    template = {"uni": "%2%", "email": '%columbia%'}
+    actual = dbutils.create_select("User_info", template, is_select=True, is_like=True)
+    expected = ('select  *  from User_info  WHERE  uni LIKE %s AND email LIKE %s ',  ['%2%', '%columbia%'])
+    assert actual == expected

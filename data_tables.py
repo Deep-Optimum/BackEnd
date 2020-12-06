@@ -194,13 +194,13 @@ class data_tables():
         if table_name == "Order_info":
             return self._Order_info
 
-    def get_info(self, table_name, template):
+    def get_info(self, table_name, template, get_simillar=False):
         """ Query the User_info table
 
         Args:
-            table_name: The name of the table
+            table_name (str): The name of the table
             template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
-
+            get_simillar (bool): query based on pattern
         return:
             a tuple (res. boolean)
             If success, aPandas dataframe containing the query result (a list of dictionaries)
@@ -212,7 +212,10 @@ class data_tables():
 
         try:
             session = self.create_session()
-            stmt, args = dbutils.create_select(table_name=table_name, template=template)
+            if get_simillar:
+                stmt, args = dbutils.create_select(table_name=table_name, template=template, is_like=True)
+            else:
+                stmt, args = dbutils.create_select(table_name=table_name, template=template)
             res = pd.read_sql_query(stmt, self._engine, params=args)
             self.commit_and_close_session(session)
             return res, True
@@ -252,6 +255,7 @@ class data_tables():
         except Exception as e:
             logger.error(e)
             return False
+
 
     def add_user_info(self, info):
         """ Add a new entry to the database
