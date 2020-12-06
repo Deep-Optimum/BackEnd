@@ -4,6 +4,16 @@ from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
 import dbutils as dbutils
+import logging
+
+# Gets or creates a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG) # set log level
+# define file handler and set formatter
+file_handler = logging.FileHandler('logfile.log')
+formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler) # add file handler to logger
 
 # Makes print look better the RDBDataTable rows a little better.
 pd.set_option('display.width', 256)
@@ -11,10 +21,17 @@ pd.set_option('display.max_columns', 12)
 
 class data_tables():
 
+    # _default_connect_info = {
+    #     'host': '127.0.0.1',
+    #     'user': 'root',
+    #     'password': 'screw2020!',
+    #     'db': 'sys',
+    #     'port': 3306
+    # }
     _default_connect_info = {
-        'host': '127.0.0.1',
+        'host': 'localhost',
         'user': 'root',
-        'password': 'screw2020!',
+        'password': 'dbuser666',
         'db': 'sys',
         'port': 3306
     }
@@ -39,6 +56,7 @@ class data_tables():
         if cnx is not None:
             self._cnx = cnx
         else:
+            logger.error("Could not get a connection.")
             raise Exception("Could not get a connection.")
 
         self._engine = create_engine('mysql+pymysql://{username}:'
@@ -46,37 +64,13 @@ class data_tables():
                                                      password=self._connect_info['password'],
                                                      host=self._connect_info['host'],
                                                      db_name=self._connect_info['db']))
-        # metadata_file_name = "db_metadata"
-        # cache_path, cached_metadata = "../resources", None
-        # if os.path.exists(cache_path):
-        #     try:
-        #         with open(os.path.join(cache_path, metadata_file_name), 'rb') as cache_file:
-        #             cached_metadata = pickle.load(file=cache_file)
-        #     except IOError:
-        #         #Cache file not found, then we reflect as usual
-        #         pass
-        # if cached_metadata is not None:
-        #     base = declarative_base(bind=self._engine, metadata=cached_metadata)
-        #     self._User_info = base.classes.User_info
-        #     self._Addresses = base.classes.Addresses
-        #     self._Listings = base.classes.Listings
-        #     self._Order_info = base.classes.Order_info
-        # else:
+
         #reflect the tables
         self.Base.prepare(self._engine, reflect=True)
         self._User_info = self.Base.classes.User_info
         self._Addresses = self.Base.classes.Addresses
         self._Listings = self.Base.classes.Listings
         self._Order_info = self.Base.classes.Order_info
-        #     try:
-        #         if not os.path.exists(cache_path):
-        #             os.makedirs(cache_path)
-        #         # make sure to open in binary mode since we're writing bytes.
-        #         with open(os.path.join(cache_path, metadata_file_name), 'wb') as cache_file:
-        #             pickle.dump(self.Base.metadata, cache_file)
-        #     except:
-        #         # couldn't write the file for some reason
-        #         pass
 
         self._tables = [self._User_info, self._Addresses, self._Listings, self._Order_info]
         self._key_cols = None
@@ -128,24 +122,18 @@ class data_tables():
         return:
               a string representation of all tables.
         """
-        result = ""
+        result = "\n"
+        result += "DataTables: "
+
         for table in self._tables:
-            # print("DataTable: ")
-            # print("Table name: " + table.__table__.name)
-            # print("Database name: " + self._connect_info['db'])
-            # print("Key columns: ", self._key_cols[table.__table__.name])
-            # print("Number of rows: " + str(self.get_row_count(table)) + " row(s)")
-            # print("A few sample rows:")
-            # print(str(self.get_sample_rows(table)))
-            # print()
-            result += "DataTable: "
             result += "\nTable name: {}".format( table.__table__.name)
             result += "\nDatabase name: {}".format(self._connect_info['db'])
             result += "\nTable type: {}".format(str(type(self)))
             result += "\nKey columns: {}".format(str(self._key_cols[table.__table__.name]))
             result += "\nNumber of rows: {} {}".format(str(self.get_row_count(table)), "row(s)")
             result += "\nA few sample rows: \n" + str(self.get_sample_rows(table)[0])
-            result += "\n \n \n"
+            result += "\n"
+
         return result
 
     def get_row_count(self, table):
@@ -161,7 +149,7 @@ class data_tables():
             return row_count
 
         except Exception as e:
-            print(e)
+            logger.error(e)
             return None
 
 
@@ -182,7 +170,7 @@ class data_tables():
             return res, True
 
         except Exception as e:
-            print(e)
+            logger.error(e)
             return None, False
 
     def get_table_class(self, table_name):
@@ -219,7 +207,7 @@ class data_tables():
              and true. Otherwise None, false
         """
         if not table_name or table_name == "":
-            print("Table name cannot be null or empty.")
+            logger.error("Table name cannot be null or empty.")
             return None, False
 
         try:
@@ -229,7 +217,7 @@ class data_tables():
             self.commit_and_close_session(session)
             return res, True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return None, False
 
     def update_info(self, table_name, template, new_values):
@@ -245,7 +233,7 @@ class data_tables():
             True if successfully added uer info. False otherwise.
         """
         if not table_name or table_name == "":
-            print("Table name cannot be null or empty.")
+            logger.error("Table name cannot be null or empty.")
             return False
 
         try:
@@ -262,7 +250,7 @@ class data_tables():
             self.commit_and_close_session(session)
             return True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return False
 
     def add_user_info(self, info):
@@ -285,7 +273,7 @@ class data_tables():
             self.commit_and_close_session(session)
             return True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return False
 
 
@@ -312,7 +300,7 @@ class data_tables():
             self.commit_and_close_session(session)
             return True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return False
 
     def add_listing(self, info):
@@ -339,7 +327,7 @@ class data_tables():
             self.commit_and_close_session(session)
             return True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return False
 
 
@@ -358,14 +346,16 @@ class data_tables():
                                   seller_uni=info["seller_uni"],
                                   listing_id=info["listing_id"],
                                   transaction_amt=info["transaction_amt"],
-                                  status=info["status"])
+                                  status=info["status"],
+                                  buyer_confirm=info["buyer_confirm"],
+                                  seller_confirm=info["seller_confirm"])
         try:
             session = self.create_session()
             session.add(new_order)
             self.commit_and_close_session(session)
             return True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return False
 
     def delete_info(self, table_name, template):
@@ -392,5 +382,5 @@ class data_tables():
             self.commit_and_close_session(session)
             return True
         except Exception as e:
-            print(e)
+            logger.error(e)
             return False

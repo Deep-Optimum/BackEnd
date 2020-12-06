@@ -2,7 +2,14 @@ import pymysql
 import logging
 from os import path
 
-logger = logging.getLogger()
+# Gets or creates a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG) # set log level
+# define file handler and set formatter
+file_handler = logging.FileHandler('logfile.log')
+formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler) # add file handler to logger
 
 def get_connection(connect_info):
     """
@@ -24,7 +31,8 @@ def get_sql_from_file(file_name=None):
     """
     # File does not exist
     if path.isfile(file_name) is False:
-        print("File load error: {}".format(file_name))
+
+        logger.error("File load error: {}".format(file_name))
         return None
 
     with open(file_name, "r") as sql_file:
@@ -53,12 +61,14 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
     """
     try:
         if conn is None:
+            logger.error("Connection cannot be None.")
             raise ValueError("Connection cannot be None.")
 
         if cur is None:
             cur = conn.cursor()
 
         if statements is None:
+            logger.error("Sql statement list is empty")
             raise ValueError("Sql statement list is empty")
 
         for idx, statement in enumerate(statements):
@@ -71,6 +81,7 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
         if commit:
             conn.commit()
     except Exception as e:
+        logger.error(e)
         raise(e)
 
     return (res, data)
