@@ -24,6 +24,7 @@ TRANSACTION_SUCCESS_STATUSES = [
     braintree.Transaction.Status.SubmittedForSettlement
 ]
 
+
 @app.route('/books', methods=['GET'])
 def search():
     try:
@@ -264,6 +265,7 @@ def create_order():
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
+
 @app.route('/orders/<order_id>', methods=['GET', 'PUT', 'DELETE'])
 def order_by_id(order_id):
     try:
@@ -298,6 +300,29 @@ def order_by_id(order_id):
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
+
+@app.route('/orders/<order_id>/<uni>', methods=['PUT'])
+def confirm_order(order_id, uni):
+    try:
+        template = {'order_id': order_id}
+        res, is_success = tables.get_info("Order_info", template)
+        if is_success:
+            data = json.loads(res.to_json(orient="table"))["data"]
+            buyer_uni = data[0]['buyer_uni']
+            if buyer_uni == uni:
+                is_updated = tables.update_info("Order_info", template, {"buyer_confirm": 1})
+                if is_updated:
+                    rsp = Response("Buyer confirmed", status=200, content_type='text/plain')
+                    return rsp
+        else:
+            rsp = Response("Query unsuccessful", status=200, content_type='text/plain')
+            return rsp
+    except Exception as e:
+        print(e)
+        rsp = Response("Internal error", status=500, content_type='text/plain')
+        return rsp
+
+
 # Checkouts
 #@app.route('/checkouts/new', methods=['GET'])
 #def new_checkout():
@@ -330,6 +355,7 @@ def create_checkout(order_id):
     else:
         return Response('Query failed', status=200, content_type='text/plain')
 
+
 @app.route('/checkouts/<transaction_id>', methods=['GET'])
 def show_checkout(transaction_id):
     transaction = find_transaction(transaction_id)
@@ -348,6 +374,7 @@ def show_checkout(transaction_id):
         }
 
     return render_template('checkouts/show.html', transaction=transaction, result=result)
+
 
 if __name__ == '__main__':
     app.debug = True
