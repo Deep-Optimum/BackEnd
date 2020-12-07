@@ -1,0 +1,9 @@
+listing_id,isbn,uni,title,price,category,description,image_url,is_sold
+1,553,a1,Calclulus,21,Math,Book on Calclulus,www.image.com,0
+2,564,a1,Discrete Math,42,Math,Book on Discrete Math,www.image.com,0
+3,806,a1,Fundamentals,11,Computer Science,Book on Fundamentals,www.image.com,0
+4,928,a2,Calculus,32,Math,Book on Calculus,www.image.com,0
+5,152,a2,Systems,33,Computer Science,Book on Systems,www.image.com,0
+6,859,a3,Western Philosophy,31,Philosophy,Book on Western Philosophy,www.image.com,0
+7,74,a3,Basket Weaving,23,Arts,Book on Basket Weaving,www.image.com,0
+8,180,a4,Modern Dance,29,Arts,Book on Modern Dance,www.image.com,1

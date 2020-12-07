@@ -1,0 +1,9 @@
+address_id,uni,country,state,city,address,zipcode
+1,a1,USA,NY,New York City,1535 Broadway ,10036
+2,a2,USA,NY,New York City,33 Hudson Yards,10001
+3,a3,USA,NY,New York City,Fifth Avenue at Central Park South,10019
+4,a4,USA,NY,New York City,371 Seventh Avenue,10001
+5,a5,USA,NY,New York City,1335 Avenue of Americas,10019
+6,a6,USA,NY,New York City,44 West 29 Street,10001
+7,a7,USA,NY,New York City,300 W 44th Street,10036
+8,a8,USA,NY,New York City,160 Central Park South,10019

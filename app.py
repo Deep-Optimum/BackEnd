@@ -321,11 +321,12 @@ def create_checkout(order_id):
             }
         })
         if result.is_success or result.transaction:
+            tables.get_info()
             return Response("Transaction success", status=200, content_type="text/plain")
             #return redirect(url_for("show_checkout", transaction_id=result.transaction.id))
         else:
             for x in result.errors.deep_errors: flash('Error: %s: %s' % (x.code, x.message))
-            return Response("Transaction failed", status=200, content_type="text/plain")
+            return Response("Transaction failed", status=201, content_type="text/plain")
             #return redirect(url_for('new_checkout'))
     else:
         return Response('Query failed', status=200, content_type='text/plain')
