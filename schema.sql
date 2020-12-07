@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS User_info;
 
 CREATE TABLE `User_info` (
   `uni` varchar(8) NOT NULL,
+  `first_name` varchar(45) NOT NULL,
+  `last_name` varchar(45) NOT NULL,
   `user_name` varchar(25) NOT NULL,
   `email` varchar(45) NOT NULL,
   `phone_number` varchar(10) NOT NULL,
@@ -14,6 +16,7 @@ CREATE TABLE `User_info` (
   UNIQUE KEY `uni_UNIQUE` (`uni`),
   UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 CREATE TABLE `Addresses` (
   `address_id` int NOT NULL,

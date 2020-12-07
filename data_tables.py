@@ -21,17 +21,10 @@ pd.set_option('display.max_columns', 12)
 
 class data_tables():
 
-    # _default_connect_info = {
-    #     'host': '127.0.0.1',
-    #     'user': 'root',
-    #     'password': 'screw2020!',
-    #     'db': 'sys',
-    #     'port': 3306
-    # }
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': 'dbuser666',
+        'password': 'dbuser666!',
         'db': 'sys',
         'port': 3306
     }
@@ -152,7 +145,6 @@ class data_tables():
             logger.error(e)
             return None
 
-
     def get_sample_rows(self, table, number_rows=_rows_to_print):
         """ Get some sample rows from the data table.
 
@@ -194,13 +186,16 @@ class data_tables():
         if table_name == "Order_info":
             return self._Order_info
 
-    def get_info(self, table_name, template, get_simillar=False):
+    def get_info(self, table_name, template, get_similar=False, order_by=None, is_or=False):
         """ Query the User_info table
 
         Args:
             table_name (str): The name of the table
             template (dict): A dictionary of the form {"field1" : value1, "field2": value2, ...}
-            get_simillar (bool): query based on pattern
+            get_similar (bool): query based on pattern
+            order_by (list): a list of category
+            is_or (bool): if true then OR is used in the query
+
         return:
             a tuple (res. boolean)
             If success, aPandas dataframe containing the query result (a list of dictionaries)
@@ -212,10 +207,12 @@ class data_tables():
 
         try:
             session = self.create_session()
-            if get_simillar:
-                stmt, args = dbutils.create_select(table_name=table_name, template=template, is_like=True)
+            if get_similar:
+                stmt, args = dbutils.create_select(table_name=table_name, template=template,
+                                                   is_like=True, order_by=order_by, is_or=is_or)
             else:
-                stmt, args = dbutils.create_select(table_name=table_name, template=template)
+                stmt, args = dbutils.create_select(table_name=table_name, template=template,
+                                                   order_by=order_by, is_or=is_or)
             res = pd.read_sql_query(stmt, self._engine, params=args)
             self.commit_and_close_session(session)
             return res, True
@@ -268,6 +265,8 @@ class data_tables():
         """
         new_user = self._User_info(uni=info["uni"],
                                    user_name=info["user_name"],
+                                   first_name=info['first_name'],
+                                   last_name=info['last_name'],
                                    email=info["email"],
                                    phone_number=info["phone_number"],
                                    credential=info["credential"])
@@ -374,7 +373,7 @@ class data_tables():
             True if successfully delete info. False otherwise.
         """
         if not table_name or table_name == "":
-            print("Table name cannot be null or empty.")
+            logger.error("Table name cannot be null or empty.")
             return False
         try:
             session = self.create_session()
@@ -388,3 +387,18 @@ class data_tables():
         except Exception as e:
             logger.error(e)
             return False
+
+    #def mark_sold
+    # def search_book_by_title(self, key_words=None):
+    #     session, title_col = self.create_session(), self._tables[2].title
+    #     if not key_words:
+    #         self.commit_and_close_session(session)
+    #         return session.query(self._tables[2]).all()
+    #     res = session.query(self._tables[2]).filter(title_col.like(key_words[0]))
+    #     for key_word in key_words:
+    #         res = res.union(session.query(self._tables[2]).filter(title_col.like(key_word)))
+    #     # res = res.order_by(self._tables[2].category).all()
+    #     # print(res)
+    #     res = pd.read_sql_query(res, self._engine)
+    #     self.commit_and_close_session(session)
+    #     return res

@@ -86,12 +86,13 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
 
     return (res, data)
 
-def template_to_where_clause(template, is_like=False):
+def template_to_where_clause(template, is_like=False, is_or=False):
     """ Converts a dictionary to a WHERE clause
 
     Args:
         template (dict): A dictionary of the form { "field1" : value1, "field2": value2, ...}
-        is_like (boolean): Switch between a strictly equal statement and a LIKE statement
+        is_like (boolean): Switch between a strictly equal statement and a LIKE statement (pattern match)
+        is_or (boolean): by default the patter match is an "or" statement e.g. last_name LIKE "A" OR id LIKE "12"
     return
         result (string): WHERE clause corresponding to the template.
     """
@@ -106,18 +107,27 @@ def template_to_where_clause(template, is_like=False):
                 args.append(v)
         else:
             for k, v in template.items():
-                terms.append(" " + k + " LIKE %s ")
-                args.append(v)
+                s = " " + k + " LIKE %s "
+                if type(v) is list:
+                    terms.extend([s] * len(v))
+                    args.extend(v)
+                else:
+                    terms.append(s)
+                    args.append(v)
 
-        w_clause = "AND".join(terms)
+        if is_or:
+            w_clause = "OR".join(terms)
+        else:
+            w_clause = "AND".join(terms)
+
         w_clause = " WHERE " + w_clause
         result = (w_clause, args)
 
     return result
 
 
-
-def create_select(table_name, template, fields=None, order_by=None, limit=None, offset=None, is_select=True, is_like=False):
+def create_select(table_name, template, fields=None, order_by=None, limit=None, offset=None,
+                  is_select=True, is_like=False, is_or=False):
     """ Produce a select statement: sql string and args.
 
     Args:
@@ -140,9 +150,17 @@ def create_select(table_name, template, fields=None, order_by=None, limit=None, 
     else:
         field_list = None
 
-    w_clause, args = template_to_where_clause(template, is_like)
+    w_clause, args = template_to_where_clause(template, is_like, is_or=is_or)
     if is_select:
         sql = "select " + field_list + " from " + table_name + " " + w_clause
+            # or_w_clause, or_args = template_to_where_clause(template, is_like, is_and=False)
+            # sql_or = "select " + field_list + " from " + table_name + " " + or_w_clause
+            # sql += "UNION (" + sql_or + ")"
+        if order_by:
+            sql += "order by " + ", ".join(order_by)
+
+        if limit:
+            sql += " limit " + str(limit)
     else:
         sql = "delete from " + table_name + " " + w_clause
     return (sql, args)

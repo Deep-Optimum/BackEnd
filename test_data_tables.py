@@ -72,6 +72,8 @@ def test_add_new_user(my_tables):
     assert res is True
 
     new_user = {"uni": "sa1234",
+                "first_name":"abc",
+                "last_name": "aaa",
                 "user_name": "King",
                 "email": "asd@columbia.edu",
                 "phone_number": "9212341234",
@@ -82,6 +84,8 @@ def test_add_new_user(my_tables):
 
     new_user = {"uni": "wl2750",
                 "user_name": "BL",
+                "first_name": "asd",
+                "last_name": "dasda",
                 "email": "wl2750@columbia.edu",
                 "phone_number": "1231231234",
                 "credential": "abe"}
@@ -168,6 +172,17 @@ def test_get_info(my_tables):
     data = parsed['data']
     assert data[0]["order_id"] == "1"
 
+def test_get_info_empty_result(my_tables):
+
+    table_name = "User_info"
+    template = {"uni": "ab1234"}
+    res, is_success = my_tables.get_info(table_name=table_name, template=template)
+    assert is_success is True
+    res = res.to_json(orient="table")
+    parsed = json.loads(res)
+    data = parsed['data']
+    assert len(data) == 0
+
 def test_get_info_empty_name(my_tables):
     table_name = ""
     template = {"uni": "sa1234"}
@@ -184,8 +199,134 @@ def test_get_info_empty_name(my_tables):
 def test_get_info_similar(my_tables):
     table_name = "User_info"
     template = {"uni": "%2%"}
-    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_simillar=True)
+    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_similar=True, is_or=True)
     assert is_success is True
+
+def test_get_info_similar_multple_fields(my_tables):
+
+    #Add 2 extra users
+    new_user = {"uni": "ab1313",
+                "user_name": "jj",
+                "first_name": "lll",
+                "last_name": "qweqwe",
+                "email": "aaad@columbia.edu",
+                "phone_number": "1231212222",
+                "credential": "11111"}
+
+    is_success = my_tables.add_user_info(new_user)
+    assert is_success is True
+
+    new_user = {"uni": "kk1111",
+                "user_name": "L",
+                "first_name": "asdasd",
+                "last_name": "1qwqwe",
+                "email": "kk1111@columbia.edu",
+                "phone_number": "9991233321",
+                "credential": "aqqq"}
+
+    is_success = my_tables.add_user_info(new_user)
+    assert is_success is True
+
+    table_name = "User_info"
+    template = {"uni": "%2%", "email": "%columbia%"}
+    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_similar=True, is_or=True)
+    res = res.to_json(orient="table")
+    parsed = json.loads(res)
+    data = parsed['data']
+    assert len(data) == 4
+    assert is_success is True
+
+
+def test_get_info_similar_multple_values(my_tables):
+
+    #Add a few books
+    new_listing = {"listing_id": 2,
+                   "isbn": 123,
+                   "uni": "wl2750",
+                   "title": "Introduction to Computer vision",
+                   "category": "CS",
+                   "price": 12.2,
+                   "description": "A",
+                   "image_url": "None",
+                   "is_sold": 0}
+
+    is_success = my_tables.add_listing(new_listing)
+    assert is_success is True
+    new_listing = {"listing_id": 3,
+                   "isbn": 123,
+                   "uni": "sa1234",
+                   "title": "Vision Architect",
+                   "category": "Visual Arts",
+                   "price": 12.2,
+                   "description": "A",
+                   "image_url": "None",
+                   "is_sold": 0}
+    is_success = my_tables.add_listing(new_listing)
+    assert is_success is True
+
+    new_listing = {"listing_id": 4,
+                   "isbn": 123,
+                   "uni": "wl2750",
+                   "title": "Computer and vision",
+                   "category": "CS",
+                   "price": 12.2,
+                   "description": "A",
+                   "image_url": "None",
+                   "is_sold": 0}
+    is_success = my_tables.add_listing(new_listing)
+    assert is_success is True
+
+    new_listing = {"listing_id": 5,
+                   "isbn": 123,
+                   "uni": "wl2750",
+                   "title": "Building Architect",
+                   "category": "Labor",
+                   "price": 12.2,
+                   "description": "A",
+                   "image_url": "None",
+                   "is_sold": 0}
+
+    is_success = my_tables.add_listing(new_listing)
+    assert is_success is True
+
+    new_listing = {"listing_id": 6,
+                   "isbn": 123,
+                   "uni": "sa1234",
+                   "title": "vision test",
+                   "category": "Misc",
+                   "price": 12.2,
+                   "description": "A",
+                   "image_url": "None",
+                   "is_sold": 0}
+    is_success = my_tables.add_listing(new_listing)
+    assert is_success is True
+
+    new_listing = {"listing_id": 7,
+                   "isbn": 123,
+                   "uni": "sa1234",
+                   "title": "Computer testing",
+                   "category": "CS",
+                   "price": 12.2,
+                   "description": "A",
+                   "image_url": "None",
+                   "is_sold": 0}
+    is_success = my_tables.add_listing(new_listing)
+    assert is_success is True
+
+    table_name = "Listings"
+    template = {"title": ["%computer%vision%", "%vision%", "%computer%"]}
+    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_similar=True,
+                                         order_by=['category'], is_or=True)
+    # res = res.to_json(orient="table")
+    # parsed = json.loads(res)
+    # data = parsed['data']
+    assert is_success is True
+    assert len(res) == 5
+
+# def test_search_book_by_title(my_tables):
+#     kws = ["%computer%vision%", "%vision%", "%computer%"]
+#     r = my_tables.search_book_by_title(key_words=kws)
+#     print(r)
 
 def test_update_user(my_tables):
     table_name = "User_info"
@@ -275,11 +416,11 @@ def test_update_info_empty_name(my_tables):
 def test_get_row_count(my_tables):
 
     r = my_tables.get_row_count(my_tables._tables[0])  # User info
-    assert r == 2
+    assert r == 4
     r = my_tables.get_row_count(my_tables._tables[1])  # Addresses
     assert r == 1
     r = my_tables.get_row_count(my_tables._tables[2])  # listings
-    assert r == 1
+    assert r == 7
     r = my_tables.get_row_count(my_tables._tables[3])  # order info
     assert r == 1
 
