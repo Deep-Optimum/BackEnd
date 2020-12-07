@@ -72,6 +72,8 @@ def test_add_new_user(my_tables):
     assert res is True
 
     new_user = {"uni": "sa1234",
+                "first_name":"abc",
+                "last_name": "aaa",
                 "user_name": "King",
                 "email": "asd@columbia.edu",
                 "phone_number": "9212341234",
@@ -82,6 +84,8 @@ def test_add_new_user(my_tables):
 
     new_user = {"uni": "wl2750",
                 "user_name": "BL",
+                "first_name": "asd",
+                "last_name": "dasda",
                 "email": "wl2750@columbia.edu",
                 "phone_number": "1231231234",
                 "credential": "abe"}
@@ -203,6 +207,8 @@ def test_get_info_similar_multple_fields(my_tables):
     #Add 2 extra users
     new_user = {"uni": "ab1313",
                 "user_name": "jj",
+                "first_name": "lll",
+                "last_name": "qweqwe",
                 "email": "aaad@columbia.edu",
                 "phone_number": "1231212222",
                 "credential": "11111"}
@@ -212,6 +218,8 @@ def test_get_info_similar_multple_fields(my_tables):
 
     new_user = {"uni": "kk1111",
                 "user_name": "L",
+                "first_name": "asdasd",
+                "last_name": "1qwqwe",
                 "email": "kk1111@columbia.edu",
                 "phone_number": "9991233321",
                 "credential": "aqqq"}

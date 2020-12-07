@@ -272,6 +272,8 @@ class data_tables():
         """
         new_user = self._User_info(uni=info["uni"],
                                    user_name=info["user_name"],
+                                   first_name=info['first_name'],
+                                   last_name=info['last_name'],
                                    email=info["email"],
                                    phone_number=info["phone_number"],
                                    credential=info["credential"])
