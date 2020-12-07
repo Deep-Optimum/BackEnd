@@ -94,9 +94,9 @@ def test_template_to_where_clause_nkeys_n_vals():
     assert actual == expected
 
 def test_template_to_where_clause_is_like():
-    template = {"uni": "%2%", "email": '%columbia%'}
+    template = {"uni": "%2%"}
     actual = dbutils.template_to_where_clause(template, is_like=True)
-    expected = (' WHERE  uni LIKE %s AND email LIKE %s ', ['%2%', '%columbia%'])
+    expected = (' WHERE  uni LIKE %s ', ['%2%'])
     assert actual == expected
 
 def test_create_select():
