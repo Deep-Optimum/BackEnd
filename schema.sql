@@ -1,3 +1,6 @@
+CREATE USER 'dev'@'localhost' IDENTIFIED BY 'dev';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON *.* TO 'dev'@'localhost';
+
 DROP TABLE IF EXISTS Addresses;
 DROP TABLE IF EXISTS Order_info;
 DROP TABLE IF EXISTS Listings;
@@ -43,8 +46,6 @@ CREATE TABLE `Listings` (
   `description` mediumtext NOT NULL,
   `image_url` varchar(256) NOT NULL,
   `is_sold` tinyint(1) NOT NULL,
-  `latitude` varchar(45) NOT NULL,
-  `longitude` varchar(45) NOT NULL,
   PRIMARY KEY (`listing_id`),
   UNIQUE KEY `post_ID_UNIQUE` (`listing_id`),
   KEY `uni_idx` (`uni`),

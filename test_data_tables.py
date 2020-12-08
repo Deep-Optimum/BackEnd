@@ -233,6 +233,8 @@ def test_get_info_similar_multple_fields(my_tables):
     res = res.to_json(orient="table")
     parsed = json.loads(res)
     data = parsed['data']
+    print()
+    print(data)
     assert len(data) == 4
     assert is_success is True
 
