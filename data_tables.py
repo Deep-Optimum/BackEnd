@@ -30,7 +30,7 @@ class data_tables():
     # }
     _default_connect_info = {
         'host': 'localhost',
-        'user': 'root',
+        'user': 'dev',
         'password': '',
         'db': 'sys',
         'port': 3306
