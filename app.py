@@ -129,7 +129,6 @@ def get_user_posts(uni):
         res, is_success = tables.get_info("Listings", template)
         if is_success:
             data = json.loads(res.to_json(orient="table"))["data"]
-            print("data", data)
             rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
