@@ -3,9 +3,12 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"  # current default Python on Travis CI
+services:
+  - mysql
 before_install:
   - python --version # Check the python version
   - pip install -U pip # Update pip to the latest
+  - mysql -u root --password="" < schema.sql
 # command to install dependencies
 install:
   - pip install -r requirements.txt
