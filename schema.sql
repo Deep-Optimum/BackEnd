@@ -43,11 +43,14 @@ CREATE TABLE `Listings` (
   `description` mediumtext NOT NULL,
   `image_url` varchar(256) NOT NULL,
   `is_sold` tinyint(1) NOT NULL,
+  `latitude` varchar(45) NOT NULL,
+  `longitude` varchar(45) NOT NULL,
   PRIMARY KEY (`listing_id`),
   UNIQUE KEY `post_ID_UNIQUE` (`listing_id`),
   KEY `uni_idx` (`uni`),
   CONSTRAINT `uni` FOREIGN KEY (`uni`) REFERENCES `User_info` (`uni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 CREATE TABLE `Order_info` (
