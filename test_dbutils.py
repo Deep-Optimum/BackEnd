@@ -5,7 +5,7 @@ import pymysql
 _default_connect_info = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'dbuser666',
+    'password': '',
     'db': 'sys',
     'port': 3306
 }
