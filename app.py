@@ -356,7 +356,7 @@ def create_checkout(order_id):
     else:
         return Response('Query failed', status=200, content_type='text/plain')
 
-
+"""
 @app.route('/checkouts/<transaction_id>', methods=['GET'])
 def show_checkout(transaction_id):
     transaction = find_transaction(transaction_id)
@@ -375,7 +375,7 @@ def show_checkout(transaction_id):
         }
     return Response(json.dumps(result), status=200, content_type='text/plain')
     #return render_template('checkouts/show.html', transaction=transaction, result=result)
-
+"""
 
 if __name__ == '__main__':
     app.debug = True

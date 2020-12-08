@@ -24,7 +24,8 @@ class data_tables():
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': 'dbuser666!',
+    #    'password': 'dbuser666!',
+        'password': 'screw2020!',
         'db': 'sys',
         'port': 3306
     }
@@ -388,7 +389,6 @@ class data_tables():
             logger.error(e)
             return False
 
-    #def mark_sold
     # def search_book_by_title(self, key_words=None):
     #     session, title_col = self.create_session(), self._tables[2].title
     #     if not key_words:
