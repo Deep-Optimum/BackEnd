@@ -9,6 +9,13 @@ _default_connect_info = {
     'db': 'sys',
     'port': 3306
 }
+# _default_connect_info = {
+#     'host': 'localhost',
+#     'user': 'root',
+#     'password': 'dbuser666',
+#     'db': 'sys',
+#     'port': 3306
+# }
 _cnx = pymysql.connect(
     host=_default_connect_info['host'],
     user=_default_connect_info['user'],
@@ -24,7 +31,7 @@ def test_get_connection():
 def test_get_sql_from_file():
     path = "./schema.sql"
     result = dbutils.get_sql_from_file(path)
-    assert len(result) == 8
+    assert len(result) == 12
 
 def test_get_sql_from_Non_exist_file():
     path = "/src/schemas.sql"
