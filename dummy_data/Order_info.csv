@@ -1,6 +1,6 @@
 order_id,buyer_uni,seller_uni,listing_id,transaction_amt,status,buyer_confirm,seller_confirm
-1,a5,a1,553,21,Completed,1,1
-2,a5,a1,564,42,In Progress,1,0
-3,a6,a1,806,11,In Progress,1,1
-4,a7,a2,928,32,In Progress,0,0
-5,a8,a3,859,31,Canceled,1,1
+1,a5,a1,1,21,Completed,1,1
+2,a5,a1,2,42,In Progress,1,0
+3,a6,a1,3,11,In Progress,1,1
+4,a7,a2,4,32,In Progress,0,0
+5,a8,a3,6,31,Canceled,1,1

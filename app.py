@@ -312,7 +312,7 @@ def create_checkout(order_id):
     res, is_success = tables.get_info("Order_info", template)
     if is_success:
         # Order Id in the DB - proceed with transaction
-        amount = float(res["transaction_amt"])
+        amount = str(float(res["transaction_amt"]))
         result = transact({
             'amount': amount,
             'payment_method_nonce': request.form["payment_method_nonce"],
@@ -321,7 +321,7 @@ def create_checkout(order_id):
             }
         })
         if result.is_success or result.transaction:
-            tables.get_info()
+            tables.update_info("Order_info", template, {'status': 'Completed'})
             return Response("Transaction success", status=200, content_type="text/plain")
             #return redirect(url_for("show_checkout", transaction_id=result.transaction.id))
         else:
@@ -347,8 +347,8 @@ def show_checkout(transaction_id):
             'icon': 'fail',
             'message': 'Your test transaction has a status of ' + transaction.status + '. Try again.'
         }
-
-    return render_template('checkouts/show.html', transaction=transaction, result=result)
+    return Response(json.dumps(result), status=200, content_type='text/plain')
+    #return render_template('checkouts/show.html', transaction=transaction, result=result)
 
 if __name__ == '__main__':
     app.debug = True

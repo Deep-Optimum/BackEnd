@@ -1,5 +1,5 @@
 listing_id,isbn,uni,title,price,category,description,image_url,is_sold
-1,553,a1,Calclulus,21,Math,Book on Calclulus,www.image.com,0
+1,553,a1,Calclulus,21,Math,Book on Calclulus,www.image.com,1
 2,564,a1,Discrete Math,42,Math,Book on Discrete Math,www.image.com,0
 3,806,a1,Fundamentals,11,Computer Science,Book on Fundamentals,www.image.com,0
 4,928,a2,Calculus,32,Math,Book on Calculus,www.image.com,0
