@@ -22,11 +22,6 @@ def test_search(client):
     assert rsp.status_code == 200
     data = json.loads(rsp.data)
     assert data[0]["title"] == 'introduction to algorithms'
-    subject_url = 'http://127.0.0.1:5000/books?subject=computer%20science'
-    rsp = client.get(subject_url)
-    assert rsp.status_code == 200
-    data = json.loads(rsp.data)
-    assert data[0]["category"] == 'computer science'
 
 
 @pytest.mark.order(1)
@@ -38,6 +33,7 @@ def test_create_new_post(client):
     assert rsp.status_code == 200
 
 
+@pytest.mark.order(10)
 def test_post_by_id(client):
     url = 'http://127.0.0.1:5000/posts/1'
     payload = {"listing_id": "1", "isbn": "9780072970548", "uni": "yz3781", "title": "introduction to algorithms",
@@ -55,14 +51,12 @@ def test_post_by_id(client):
 @pytest.mark.order(2)
 def test_create_users(client):
     url = 'http://127.0.0.1:5000/users'
-    payload = {"uni": "yz3781", "user_name": "Dennis", "email": "yz3710@columbia.edu",
-               "phone_number": "", "credential": ""}
+    payload = {"uni": "yz3781", "first_name": "D", "last_name": "Z", "user_name": "Dennis",
+               "email": "yz3781@columbia.edu", "phone_number": "", "credential": ""}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
-    assert rsp.status_code == 200
-    payload = {"uni": "ab1234", "user_name": "Abby", "email": "ab1234@columbia.edu",
-               "phone_number": "", "credential": ""}
+    payload = {"uni": "ab1234", "first_name": "A", "last_name": "B", "user_name": "Abby",
+               "email": "ab1234@columbia.edu", "phone_number": "", "credential": ""}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
-    assert rsp.status_code == 200
 
 
 @pytest.mark.order(5)
@@ -132,6 +126,7 @@ def test_create_order(client):
     assert rsp.status_code == 200
 
 
+@pytest.mark.order(9)
 def test_order_by_id(client):
     url = 'http://127.0.0.1:5000/orders/1'
     payload = {"order_id": "1", "buyer_uni": "yz3781", "seller_uni": "ab1234", "listing_id": "1",

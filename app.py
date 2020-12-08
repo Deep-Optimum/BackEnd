@@ -38,17 +38,10 @@ def search():
                 rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
         elif "title" in request.args:
-            template = {"title": request.args.get("title").lower()}
-            res, is_success = tables.get_info("Listings", template)
-            if is_success:
-                data = json.loads(res.to_json(orient="table"))["data"]
-                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
-            else:
-                rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
-            return rsp
-        elif "subject" in request.args:
-            template = {"category": request.args.get("subject").lower()}
-            res, is_success = tables.get_info("Listings", template)
+            word_list = request.args.get("title").lower().split()
+            query_str = '%'+'%'.join(word_list)+'%'
+            template = {"title": query_str}
+            res, is_success = tables.get_info("Listings", template, get_similar=True, order_by=['category'], is_or=True)
             if is_success:
                 data = json.loads(res.to_json(orient="table"))["data"]
                 rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
