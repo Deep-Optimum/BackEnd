@@ -31,6 +31,7 @@ def test_create_new_post(client):
                "price": 100.00, "category": "computer science", "description": "", "image_url": "", "is_sold": 0}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
 
 
 @pytest.mark.order(10)
@@ -49,7 +50,7 @@ def test_post_by_id(client):
 
 
 @pytest.mark.order(2)
-def test_create_users(client):
+def test_create_user(client):
     url = 'http://127.0.0.1:5000/users'
     payload = {"uni": "yz3781", "first_name": "D", "last_name": "Z", "user_name": "Dennis",
                "email": "yz3781@columbia.edu", "phone_number": "", "credential": ""}
@@ -105,6 +106,7 @@ def test_create_address(client):
                "address": "xx", "zipcode": "10025"}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
 
 
 def test_address_by_id(client):
@@ -124,6 +126,7 @@ def test_create_order(client):
                "transaction_amt": 78.00, "status": "In progress", "buyer_confirm": 0, "seller_confirm": 1}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
 
 
 @pytest.mark.order(9)
