@@ -59,6 +59,10 @@ def test_create_users(client):
                "phone_number": "", "credential": ""}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    payload = {"uni": "ab1234", "user_name": "Abby", "email": "ab1234@columbia.edu",
+               "phone_number": "", "credential": ""}
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
+    assert rsp.status_code == 200
 
 
 @pytest.mark.order(5)
@@ -122,16 +126,16 @@ def test_address_by_id(client):
 @pytest.mark.order(4)
 def test_create_order(client):
     url = 'http://127.0.0.1:5000/orders'
-    payload = {"order_id": "1", "buyer_uni": "yz3781", "seller_uni": "ab1234", "listing_id": "2",
-               "transaction_amt": 78.00, "status": "In progress"}
+    payload = {"order_id": "1", "buyer_uni": "yz3781", "seller_uni": "ab1234", "listing_id": "1",
+               "transaction_amt": 78.00, "status": "In progress", "buyer_confirm": 0, "seller_confirm": 1}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
 
 
 def test_order_by_id(client):
     url = 'http://127.0.0.1:5000/orders/1'
-    payload = {"order_id": "1", "buyer_uni": "yz3781", "seller_uni": "ab1234", "listing_id": "2",
-               "transaction_amt": 78.00, "status": "Completed"}
+    payload = {"order_id": "1", "buyer_uni": "yz3781", "seller_uni": "ab1234", "listing_id": "1",
+               "transaction_amt": 78.00, "status": "Completed","buyer_confirm": 0, "seller_confirm": 1}
     rsp_put = client.put(url, data=json.dumps(payload, indent=4))
     assert rsp_put.status_code == 200
     rsp_get = client.get(url)
@@ -140,3 +144,10 @@ def test_order_by_id(client):
     assert data[0]["order_id"] == '1'
     rsp_del = client.delete(url)
     assert rsp_del.status_code == 200
+
+
+@pytest.mark.order(8)
+def test_confirm_order(client):
+    url = 'http://127.0.0.1:5000/orders/1/yz3781'
+    rsp = client.put(url)
+    assert rsp.status_code == 200
