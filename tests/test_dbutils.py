@@ -29,7 +29,7 @@ def test_get_connection():
     assert conn is not None
 
 def test_get_sql_from_file():
-    path = "./schema.sql"
+    path = "../schema.sql"
     result = dbutils.get_sql_from_file(path)
     assert len(result) == 12
 
@@ -39,13 +39,13 @@ def test_get_sql_from_Non_exist_file():
     assert result is None
 
 def test_run_multiple_sql_statements():
-    path = "./schema.sql"
+    path = "../schema.sql"
     result = dbutils.get_sql_from_file(path)
     res, data = dbutils.run_multiple_sql_statements(result, conn=_cnx, commit=True, fetch=True)
     assert res == 0
 
 def test_run_multiple_sql_statements_no_conn():
-    path = "schema.sql"
+    path = "../schema.sql"
     result = dbutils.get_sql_from_file(path)
     with pytest.raises(ValueError) as excinfo:
         dbutils.run_multiple_sql_statements(result, conn=None, commit=True, fetch=True)
