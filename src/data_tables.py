@@ -30,6 +30,7 @@ class data_tables():
     #     'db': 'sys',
     #     'port': 3306
     # }
+
     #Use the following before commit - Travis does not use PW
     _default_connect_info = {
         'host': 'localhost',
@@ -61,6 +62,10 @@ class data_tables():
         else:
             logger.error("Could not get a connection.")
             raise Exception("Could not get a connection.")
+
+        #Create table
+        path = "./resources/schema.sql"
+        dbutils.run_multiple_sql_statements(dbutils.get_sql_from_file(path), conn=self._cnx)
 
         self._engine = create_engine('mysql+pymysql://{username}:'
                 '{password}@{host}/{db_name}'.format(username=self._connect_info['user'],
