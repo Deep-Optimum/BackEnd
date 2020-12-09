@@ -1,6 +1,6 @@
 import pytest
 import json
-from src import app
+import app
 from dotenv import load_dotenv
 
 extra_nonces = ["fake-valid-discover-nonce",
@@ -9,7 +9,6 @@ extra_nonces = ["fake-valid-discover-nonce",
                 "fake-valid-debit-nonce	"]
 
 load_dotenv()
-
 
 @pytest.fixture
 def client():

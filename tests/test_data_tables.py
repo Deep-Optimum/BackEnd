@@ -1,5 +1,5 @@
 import pytest
-from src import data_tables as dts
+import src.data_tables as dts
 import json
 
 

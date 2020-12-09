@@ -23,21 +23,22 @@ pd.set_option('display.max_columns', 12)
 
 class data_tables():
 
-    # _default_connect_info = {
-    #     'host': 'localhost',
-    #     'user': 'root',
-    #     'password': 'dbuser666',
-    #     'db': 'sys',
-    #     'port': 3306
-    # }
-    #Use the following before commit - Travis does not use PW
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': '',
+        'password': 'dbuser666',
         'db': 'sys',
         'port': 3306
     }
+
+    #Use the following before commit - Travis does not use PW
+    # _default_connect_info = {
+    #     'host': 'localhost',
+    #     'user': 'root',
+    #     'password': '',
+    #     'db': 'sys',
+    #     'port': 3306
+    # }
     _rows_to_print = 10
     Base = automap_base()
 
@@ -61,6 +62,10 @@ class data_tables():
         else:
             logger.error("Could not get a connection.")
             raise Exception("Could not get a connection.")
+
+        #Create table
+        path = "./resources/schema.sql"
+        dbutils.run_multiple_sql_statements(dbutils.get_sql_from_file(path), conn=self._cnx)
 
         self._engine = create_engine('mysql+pymysql://{username}:'
                 '{password}@{host}/{db_name}'.format(username=self._connect_info['user'],

@@ -21,8 +21,8 @@
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
-            306 statements &nbsp;
-            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">306 run</button>
+            290 statements &nbsp;
+            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">290 run</button>
             <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">0 missing</button>
             <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">0 excluded</button>
         </h2>
@@ -52,12 +52,12 @@
 </div>
 <div id="source">
     <p id="t1" class="run"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="key">import</span> <span class="nam">pytest</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="key">from</span> <span class="nam">src</span> <span class="key">import</span> <span class="nam">data_tables</span> <span class="key">as</span> <span class="nam">dts</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="key">import</span> <span class="nam">src</span><span class="op">.</span><span class="nam">data_tables</span> <span class="key">as</span> <span class="nam">dts</span>&nbsp;</span><span class="r"></span></p>
     <p id="t3" class="run"><span class="n"><a href="#t3">3</a></span><span class="t"><span class="key">import</span> <span class="nam">json</span>&nbsp;</span><span class="r"></span></p>
     <p id="t4" class="pln"><span class="n"><a href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t5" class="pln"><span class="n"><a href="#t5">5</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t6" class="run"><span class="n"><a href="#t6">6</a></span><span class="t"><span class="op">@</span><span class="nam">pytest</span><span class="op">.</span><span class="nam">fixture</span><span class="op">(</span><span class="nam">scope</span><span class="op">=</span><span class="str">"module"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t7" class="pln"><span class="n"><a href="#t7">7</a></span><span class="t"><span class="key">def</span> <span class="nam">my_tables</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t7" class="run"><span class="n"><a href="#t7">7</a></span><span class="t"><span class="key">def</span> <span class="nam">my_tables</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t8" class="run"><span class="n"><a href="#t8">8</a></span><span class="t">    <span class="nam">tables</span> <span class="op">=</span> <span class="nam">dts</span><span class="op">.</span><span class="nam">data_tables</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t9" class="run"><span class="n"><a href="#t9">9</a></span><span class="t">    <span class="key">return</span> <span class="nam">tables</span>&nbsp;</span><span class="r"></span></p>
     <p id="t10" class="pln"><span class="n"><a href="#t10">10</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -534,32 +534,12 @@
     <p id="t481" class="run"><span class="n"><a href="#t481">481</a></span><span class="t">    <span class="nam">filepath</span> <span class="op">=</span> <span class="str">"/"</span>&nbsp;</span><span class="r"></span></p>
     <p id="t482" class="run"><span class="n"><a href="#t482">482</a></span><span class="t">    <span class="nam">my_tables</span><span class="op">.</span><span class="nam">import_from_csv</span><span class="op">(</span><span class="nam">table_name</span><span class="op">=</span><span class="nam">table_name</span><span class="op">,</span> <span class="nam">filepath</span><span class="op">=</span><span class="nam">filepath</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t483" class="run"><span class="n"><a href="#t483">483</a></span><span class="t">    <span class="key">assert</span> <span class="nam">is_success</span> <span class="key">is</span> <span class="key">False</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t484" class="pln"><span class="n"><a href="#t484">484</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t485" class="pln"><span class="n"><a href="#t485">485</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t486" class="run"><span class="n"><a href="#t486">486</a></span><span class="t"><span class="key">def</span> <span class="nam">test_delete_info_2</span><span class="op">(</span><span class="nam">my_tables</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t487" class="pln"><span class="n"><a href="#t487">487</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t488" class="run"><span class="n"><a href="#t488">488</a></span><span class="t">    <span class="nam">table_name</span> <span class="op">=</span> <span class="str">"Order_info"</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t489" class="run"><span class="n"><a href="#t489">489</a></span><span class="t">    <span class="nam">template</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t490" class="run"><span class="n"><a href="#t490">490</a></span><span class="t">    <span class="nam">res</span> <span class="op">=</span> <span class="nam">my_tables</span><span class="op">.</span><span class="nam">delete_info</span><span class="op">(</span><span class="nam">table_name</span><span class="op">,</span> <span class="nam">template</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t491" class="run"><span class="n"><a href="#t491">491</a></span><span class="t">    <span class="key">assert</span> <span class="nam">res</span> <span class="key">is</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t492" class="run"><span class="n"><a href="#t492">492</a></span><span class="t">    <span class="nam">table_name</span> <span class="op">=</span> <span class="str">"Listings"</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t493" class="run"><span class="n"><a href="#t493">493</a></span><span class="t">    <span class="nam">template</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t494" class="run"><span class="n"><a href="#t494">494</a></span><span class="t">    <span class="nam">res</span> <span class="op">=</span> <span class="nam">my_tables</span><span class="op">.</span><span class="nam">delete_info</span><span class="op">(</span><span class="nam">table_name</span><span class="op">,</span> <span class="nam">template</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t495" class="run"><span class="n"><a href="#t495">495</a></span><span class="t">    <span class="key">assert</span> <span class="nam">res</span> <span class="key">is</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t496" class="run"><span class="n"><a href="#t496">496</a></span><span class="t">    <span class="nam">table_name</span> <span class="op">=</span> <span class="str">"Addresses"</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t497" class="run"><span class="n"><a href="#t497">497</a></span><span class="t">    <span class="nam">template</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t498" class="run"><span class="n"><a href="#t498">498</a></span><span class="t">    <span class="nam">res</span> <span class="op">=</span> <span class="nam">my_tables</span><span class="op">.</span><span class="nam">delete_info</span><span class="op">(</span><span class="nam">table_name</span><span class="op">,</span> <span class="nam">template</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t499" class="run"><span class="n"><a href="#t499">499</a></span><span class="t">    <span class="key">assert</span> <span class="nam">res</span> <span class="key">is</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t500" class="run"><span class="n"><a href="#t500">500</a></span><span class="t">    <span class="nam">table_name</span> <span class="op">=</span> <span class="str">"User_info"</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t501" class="run"><span class="n"><a href="#t501">501</a></span><span class="t">    <span class="nam">template</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t502" class="run"><span class="n"><a href="#t502">502</a></span><span class="t">    <span class="nam">res</span> <span class="op">=</span> <span class="nam">my_tables</span><span class="op">.</span><span class="nam">delete_info</span><span class="op">(</span><span class="nam">table_name</span><span class="op">,</span> <span class="nam">template</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t503" class="run"><span class="n"><a href="#t503">503</a></span><span class="t">    <span class="key">assert</span> <span class="nam">res</span> <span class="key">is</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
 </div>
 <div id="footer">
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.3</a>,
-            created at 2020-12-09 10:39 +0800
+            created at 2020-12-09 15:11 -0500
         </p>
     </div>
 </div>
