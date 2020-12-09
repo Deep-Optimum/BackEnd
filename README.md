@@ -1,4 +1,4 @@
-# Synopsis
+# Synopsis [![Build Status](https://travis-ci.com/Deep-Optimum/BackEnd.svg?branch=main)](https://travis-ci.com/Deep-Optimum/BackEnd)
 Course project for COMS 4156 - Advanced Software Engineering
 
 ## Instructions
@@ -14,4 +14,4 @@ To compile all tests:
 ```sh
 coverage run -m unittest discover
 ```
-[![Build Status](https://travis-ci.com/Deep-Optimum/BackEnd.svg?branch=main)](https://travis-ci.com/Deep-Optimum/BackEnd)
+
