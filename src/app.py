@@ -5,11 +5,12 @@ import braintree
 from payment import transact, find_transaction
 import os
 from src.data_tables import data_tables
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
-
+CORS(app)
 app.secret_key = os.environ.get('SECRET_KEY')
 
 tables = data_tables()
