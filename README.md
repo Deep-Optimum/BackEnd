@@ -14,3 +14,4 @@ To compile all tests:
 ```sh
 coverage run -m unittest discover
 ```
+[![Build Status](https://travis-ci.com/Deep-Optimum/BackEnd.svg?branch=main)](https://travis-ci.com/Deep-Optimum/BackEnd)
