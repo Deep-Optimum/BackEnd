@@ -327,7 +327,7 @@ def create_checkout(order_id):
         # 1. Both buyer and seller must have confirmed
         buyer_confirm = int(res["buyer_confirm"][0])
         seller_confirm = int(res["seller_confirm"][0])
-        if buyer_confirm is False or seller_confirm is False:
+        if buyer_confirm == 0 or seller_confirm == 0:
             return Response("Both buyer and seller must confirm", status=202, content_type="text/plain")
         # 2. Status is In Progress
         status = str(res["status"][0])
