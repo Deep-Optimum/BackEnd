@@ -1,6 +1,6 @@
 import pytest
 import json
-import app
+import src.app as app
 from dotenv import load_dotenv
 
 extra_nonces = ["fake-valid-discover-nonce",
@@ -22,7 +22,7 @@ def test_set_up():
 
     list1 = ["User_info", "Addresses", "Listings", "Order_info"]
     for table_name in list1:
-        filepath = "dummy_data/" + table_name + ".csv"
+        filepath = "/dummy_data/" + table_name + ".csv"
         res = my_tables.import_from_csv(table_name=table_name, filepath=filepath)
         assert res is True
 
