@@ -20,6 +20,7 @@ logger.addHandler(file_handler) # add file handler to logger
 pd.set_option('display.width', 256)
 pd.set_option('display.max_columns', 12)
 
+
 class data_tables():
 
     # _default_connect_info = {

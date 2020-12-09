@@ -443,7 +443,7 @@ def test_delete_info_fail(my_tables):
     is_success = my_tables.delete_info(table_name=table_name, template=template)
     assert is_success is False
 
-def test_delete_info(my_tables):
+def test_delete_info_1(my_tables):
     table_name = "Addresses"
     template = {"address_id": "4"}
     is_success = my_tables.delete_info(table_name=table_name, template=template)
@@ -482,3 +482,22 @@ def test_import_from_csv(my_tables):
     my_tables.import_from_csv(table_name=table_name, filepath=filepath)
     assert is_success is False
 
+
+def test_delete_info_2(my_tables):
+
+    table_name = "Order_info"
+    template = None
+    res = my_tables.delete_info(table_name, template)
+    assert res is True
+    table_name = "Listings"
+    template = None
+    res = my_tables.delete_info(table_name, template)
+    assert res is True
+    table_name = "Addresses"
+    template = None
+    res = my_tables.delete_info(table_name, template)
+    assert res is True
+    table_name = "User_info"
+    template = None
+    res = my_tables.delete_info(table_name, template)
+    assert res is True
