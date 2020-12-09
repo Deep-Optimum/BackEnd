@@ -94,6 +94,7 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
 
     return (res, data)
 
+
 def template_to_where_clause(template, is_like=False, is_or=False):
     """ Converts a dictionary to a WHERE clause
 

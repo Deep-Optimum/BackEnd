@@ -142,7 +142,6 @@ def test_order_by_id(client):
     rsp_del = client.delete(url)
     assert rsp_del.status_code == 200
 
-
 @pytest.mark.order(8)
 def test_confirm_order(client):
     url = 'http://127.0.0.1:5000/orders/1/yz3781'

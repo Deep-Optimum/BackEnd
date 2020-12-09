@@ -12,7 +12,6 @@ def my_tables():
 def test_print_table(my_tables):
     print(my_tables)
 
-
 def test_get_key_cols(my_tables):
     key_cols = my_tables.get_key_cols()
     assert len(key_cols), 4

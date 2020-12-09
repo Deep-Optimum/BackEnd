@@ -26,7 +26,6 @@ def test_set_up():
         res = my_tables.import_from_csv(table_name=table_name, filepath=filepath)
         assert res is True
 
-
 def test_checkout_already_ordered(client):
     url = 'http://127.0.0.1:5000/checkouts/1'
     payload = {'payment_method_nonce': 'fake_valid_nonce'}

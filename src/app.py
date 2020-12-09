@@ -10,6 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
 app.secret_key = os.environ.get('SECRET_KEY')
 
 tables = data_tables()
