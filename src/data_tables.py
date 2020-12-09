@@ -3,14 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
-import dbutils as dbutils
+from utils import dbutils as dbutils
 import logging
 
 # Gets or creates a logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # set log level
 # define file handler and set formatter
-file_handler = logging.FileHandler('logfile.log')
+file_handler = logging.FileHandler('../logfile.log')
 formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler) # add file handler to logger
@@ -28,6 +28,7 @@ class data_tables():
     #     'db': 'sys',
     #     'port': 3306
     # }
+    #Use the following before commit
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',

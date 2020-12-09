@@ -1,10 +1,10 @@
-from flask import Flask, request, Response, redirect, url_for, flash, render_template
+from flask import Flask, request, Response, flash
 import json
 from dotenv import load_dotenv
 import braintree
-from payment import generate_client_token, transact, find_transaction
+from payment import transact, find_transaction
 
-from data_tables import data_tables
+from src.data_tables import data_tables
 
 load_dotenv()
 

@@ -6,7 +6,7 @@ from os import path
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # set log level
 # define file handler and set formatter
-file_handler = logging.FileHandler('logfile.log')
+file_handler = logging.FileHandler('../logfile.log')
 formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler) # add file handler to logger
@@ -30,8 +30,8 @@ def get_sql_from_file(file_name=None):
         statements (list): A list of sql statements to be executed.
     """
     # File does not exist
+    print("the current file", file_name)
     if path.isfile(file_name) is False:
-
         logger.error("File load error: {}".format(file_name))
         return None
 
