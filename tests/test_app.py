@@ -1,6 +1,6 @@
 import pytest
 import json
-import app
+from src import app
 import os
 
 

@@ -1,6 +1,6 @@
 import pytest
 import json
-import app
+from src import app
 from dotenv import load_dotenv
 
 extra_nonces = ["fake-valid-discover-nonce",
