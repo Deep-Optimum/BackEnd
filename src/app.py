@@ -2,7 +2,7 @@ from flask import Flask, request, Response, flash
 import json
 from dotenv import load_dotenv
 import braintree
-from payment import transact, find_transaction
+import payment
 import os
 from src.data_tables import data_tables
 from flask_cors import CORS
@@ -335,7 +335,7 @@ def create_checkout(order_id):
         if status == "In Progress":
             # Order Id in the DB - proceed with transaction
             amount = str(float(res["transaction_amt"]))
-            result = transact({
+            result = payment.transact({
                 'amount': amount,
                 'payment_method_nonce': body["payment_method_nonce"],
                 'options': {

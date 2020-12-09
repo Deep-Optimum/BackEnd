@@ -12,10 +12,17 @@ $pip install -r requirements.txt
 To compile all tests:
 
 ```sh
-$pytest
+$python -m pytest tests
+```
+The backend database schema is defined in schema.sql under the folder resources.
+
+You can automatically build your database and tables by running
+
+```sh
+$python src/set_up.py
 ```
 
-To deploy, run the app.py file under src. 
+To deploy the backend,
 ```sh
-$python3 ./src/app.py
+$python3 src/app.py
 ```
