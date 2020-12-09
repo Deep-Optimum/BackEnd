@@ -3,21 +3,21 @@ import utils.dbutils as dbutils
 import pymysql
 
 #Use this before commit
-# _default_connect_info = {
-#     'host': 'localhost',
-#     'user': 'root',
-#     'password': '',
-#     'db': 'sys',
-#     'port': 3306
-# }
-
 _default_connect_info = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'dbuser666',
+    'password': '',
     'db': 'sys',
     'port': 3306
 }
+
+# _default_connect_info = {
+#     'host': 'localhost',
+#     'user': 'root',
+#     'password': 'dbuser666',
+#     'db': 'sys',
+#     'port': 3306
+# }
 _cnx = pymysql.connect(
     host=_default_connect_info['host'],
     user=_default_connect_info['user'],
