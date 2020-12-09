@@ -1,6 +1,6 @@
 import pytest
 import json
-import app
+from src import app
 
 
 @pytest.fixture
@@ -10,7 +10,7 @@ def client():
         yield client
 
 
-@pytest.mark.order(4)
+@pytest.mark.order(10)
 def test_search(client):
     isbn_url = 'http://127.0.0.1:5000/books?isbn=9780072970548'
     rsp = client.get(isbn_url)
@@ -24,16 +24,17 @@ def test_search(client):
     assert data[0]["title"] == 'introduction to algorithms'
 
 
-@pytest.mark.order(1)
+@pytest.mark.order(2)
 def test_create_new_post(client):
     url = 'http://127.0.0.1:5000/posts'
     payload = {"listing_id": "1", "isbn": "9780072970548", "uni": "yz3781", "title": "introduction to algorithms",
                "price": 100.00, "category": "computer science", "description": "", "image_url": "", "is_sold": 0}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
 
 
-@pytest.mark.order(10)
+@pytest.mark.order(11)
 def test_post_by_id(client):
     url = 'http://127.0.0.1:5000/posts/1'
     payload = {"listing_id": "1", "isbn": "9780072970548", "uni": "yz3781", "title": "introduction to algorithms",
@@ -48,8 +49,8 @@ def test_post_by_id(client):
     assert rsp_del.status_code == 200
 
 
-@pytest.mark.order(2)
-def test_create_users(client):
+@pytest.mark.order(1)
+def test_create_user(client):
     url = 'http://127.0.0.1:5000/users'
     payload = {"uni": "yz3781", "first_name": "D", "last_name": "Z", "user_name": "Dennis",
                "email": "yz3781@columbia.edu", "phone_number": "", "credential": ""}
@@ -105,6 +106,7 @@ def test_create_address(client):
                "address": "xx", "zipcode": "10025"}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
 
 
 def test_address_by_id(client):
@@ -124,6 +126,7 @@ def test_create_order(client):
                "transaction_amt": 78.00, "status": "In progress", "buyer_confirm": 0, "seller_confirm": 1}
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 200
+    rsp = client.post(url, data=json.dumps(payload, indent=4))
 
 
 @pytest.mark.order(9)

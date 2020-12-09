@@ -1,3 +1,9 @@
+CREATE USER IF NOT EXISTS 'dev'@'localhost' IDENTIFIED BY 'dev';
+GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP ON *.* TO 'dev'@'localhost';
+
+CREATE DATABASE IF NOT EXISTS `sys` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `sys`;
+
 DROP TABLE IF EXISTS Addresses;
 DROP TABLE IF EXISTS Order_info;
 DROP TABLE IF EXISTS Listings;
@@ -15,7 +21,7 @@ CREATE TABLE `User_info` (
   UNIQUE KEY `userName_UNIQUE` (`user_name`),
   UNIQUE KEY `uni_UNIQUE` (`uni`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `Addresses` (
@@ -30,7 +36,7 @@ CREATE TABLE `Addresses` (
   UNIQUE KEY `address_ID_UNIQUE` (`address_id`),
   KEY `address_uni_idx` (`uni`),
   CONSTRAINT `address_uni` FOREIGN KEY (`uni`) REFERENCES `User_info` (`uni`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `Listings` (
@@ -47,7 +53,8 @@ CREATE TABLE `Listings` (
   UNIQUE KEY `post_ID_UNIQUE` (`listing_id`),
   KEY `uni_idx` (`uni`),
   CONSTRAINT `uni` FOREIGN KEY (`uni`) REFERENCES `User_info` (`uni`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 CREATE TABLE `Order_info` (
@@ -67,4 +74,4 @@ CREATE TABLE `Order_info` (
   CONSTRAINT `buyer_uni` FOREIGN KEY (`buyer_uni`) REFERENCES `User_info` (`uni`),
   CONSTRAINT `listing_id` FOREIGN KEY (`listing_id`) REFERENCES `Listings` (`listing_id`),
   CONSTRAINT `seller_uni` FOREIGN KEY (`seller_uni`) REFERENCES `User_info` (`uni`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

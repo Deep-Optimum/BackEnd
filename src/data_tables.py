@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
-import dbutils as dbutils
+from utils import dbutils as dbutils
 import logging
 import os
 
@@ -11,7 +11,7 @@ import os
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # set log level
 # define file handler and set formatter
-file_handler = logging.FileHandler('logfile.log')
+file_handler = logging.FileHandler('../logfile.log')
 formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler) # add file handler to logger
@@ -22,10 +22,18 @@ pd.set_option('display.max_columns', 12)
 
 class data_tables():
 
+    # _default_connect_info = {
+    #     'host': 'localhost',
+    #     'user': 'root',
+    #     'password': 'dbuser666',
+    #     'db': 'sys',
+    #     'port': 3306
+    # }
+    #Use the following before commit
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': 'screw2020!',
+        'password': 'dbuser666',
         'db': 'sys',
         'port': 3306
     }

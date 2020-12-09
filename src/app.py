@@ -1,10 +1,10 @@
-from flask import Flask, request, Response,  flash
+from flask import Flask, request, Response, flash
 import json
 from dotenv import load_dotenv
 import braintree
-from payment import transact
-import os
-from data_tables import data_tables
+from payment import transact, find_transaction
+
+from src.data_tables import data_tables
 
 load_dotenv()
 
@@ -131,7 +131,6 @@ def get_user_posts(uni):
         res, is_success = tables.get_info("Listings", template)
         if is_success:
             data = json.loads(res.to_json(orient="table"))["data"]
-            print("data", data)
             rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
