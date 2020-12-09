@@ -1,5 +1,5 @@
 import pytest
-from utils import dbutils
+import utils.dbutils
 import pymysql
 
 #Use this before commit
