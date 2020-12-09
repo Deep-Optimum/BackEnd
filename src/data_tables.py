@@ -22,21 +22,21 @@ pd.set_option('display.max_columns', 12)
 
 class data_tables():
 
-    # _default_connect_info = {
-    #     'host': 'localhost',
-    #     'user': 'root',
-    #     'password': 'dbuser666',
-    #     'db': 'sys',
-    #     'port': 3306
-    # }
-    # Use the following before commit - Travis does not use PW
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': '',
+        'password': 'dbuser666',
         'db': 'sys',
         'port': 3306
     }
+    # Use the following before commit - Travis does not use PW
+    # _default_connect_info = {
+    #     'host': 'localhost',
+    #     'user': 'root',
+    #     'password': '',
+    #     'db': 'sys',
+    #     'port': 3306
+    # }
     _rows_to_print = 10
     Base = automap_base()
 
