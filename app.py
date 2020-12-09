@@ -1,14 +1,16 @@
-from flask import Flask, request, Response, redirect, url_for, flash, render_template
+from flask import Flask, request, Response,  flash
 import json
 from dotenv import load_dotenv
 import braintree
-from payment import generate_client_token, transact, find_transaction
-
+from payment import transact
+import os
 from data_tables import data_tables
 
 load_dotenv()
 
 app = Flask(__name__)
+
+app.secret_key = os.environ.get('SECRET_KEY')
 
 tables = data_tables()
 _host = "127.0.0.1"
@@ -38,17 +40,10 @@ def search():
                 rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
         elif "title" in request.args:
-            template = {"title": request.args.get("title").lower()}
-            res, is_success = tables.get_info("Listings", template)
-            if is_success:
-                data = json.loads(res.to_json(orient="table"))["data"]
-                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
-            else:
-                rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
-            return rsp
-        elif "subject" in request.args:
-            template = {"category": request.args.get("subject").lower()}
-            res, is_success = tables.get_info("Listings", template)
+            word_list = request.args.get("title").lower().split()
+            query_str = '%'+'%'.join(word_list)+'%'
+            template = {"title": query_str}
+            res, is_success = tables.get_info("Listings", template, get_similar=True, order_by=['category'], is_or=True)
             if is_success:
                 data = json.loads(res.to_json(orient="table"))["data"]
                 rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
@@ -323,38 +318,43 @@ def confirm_order(order_id, uni):
         return rsp
 
 
-# Checkouts
-#@app.route('/checkouts/new', methods=['GET'])
-#def new_checkout():
-#    client_token = generate_client_token()
-#    return client_token
-#    #return render_template('checkouts/new.html', client_token=client_token)
-
 @app.route("/checkouts/<order_id>", methods=['POST'])
 def create_checkout(order_id):
-    #body = json.loads(request.data)
     template = {'order_id': order_id}
     res, is_success = tables.get_info("Order_info", template)
-    if is_success:
-        # Order Id in the DB - proceed with transaction
-        amount = str(float(res["transaction_amt"]))
-        result = transact({
-            'amount': amount,
-            'payment_method_nonce': request.form["payment_method_nonce"],
-            'options': {
-                'submit_for_settlement': True
-            }
-        })
-        if result.is_success or result.transaction:
-            tables.update_info("Order_info", template, {'status': 'Completed'})
-            return Response("Transaction success", status=200, content_type="text/plain")
-            #return redirect(url_for("show_checkout", transaction_id=result.transaction.id))
+    body = json.loads(request.data)
+    if len(res) != 0:
+        # check the following:
+        # 1. Both buyer and seller must have confirmed
+        buyer_confirm = int(res["buyer_confirm"][0])
+        seller_confirm = int(res["seller_confirm"][0])
+        if buyer_confirm is False or seller_confirm is False:
+            return Response("Both buyer and seller must confirm", status=202, content_type="text/plain")
+        # 2. Status is In Progress
+        status = str(res["status"][0])
+        if status == "In Progress":
+            # Order Id in the DB - proceed with transaction
+            amount = str(float(res["transaction_amt"]))
+            result = transact({
+                'amount': amount,
+                'payment_method_nonce': body["payment_method_nonce"],
+                'options': {
+                    'submit_for_settlement': True
+                }
+            })
+            if result.is_success or result.transaction:
+                tables.update_info("Order_info", template, {'status': 'Completed'})
+                return Response("Transaction success", status=200, content_type="text/plain")
+            else:
+                for x in result.errors.deep_errors:
+                    flash('Error: %s: %s' % (x.code, x.message))
+                return Response("Transaction failed", status=401, content_type="text/plain")
+
         else:
-            for x in result.errors.deep_errors: flash('Error: %s: %s' % (x.code, x.message))
-            return Response("Transaction failed", status=201, content_type="text/plain")
-            #return redirect(url_for('new_checkout'))
+            return Response("Error. Please check with the admin.", status=201, content_type="text/plain")
     else:
-        return Response('Query failed', status=200, content_type='text/plain')
+        return Response('Query failed', status=400, content_type='text/plain')
+
 
 """
 @app.route('/checkouts/<transaction_id>', methods=['GET'])

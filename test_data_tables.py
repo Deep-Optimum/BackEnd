@@ -2,13 +2,16 @@ import pytest
 import data_tables as dts
 import json
 
+
 @pytest.fixture(scope="module")
 def my_tables():
     tables = dts.data_tables()
     return tables
 
+
 def test_print_table(my_tables):
     print(my_tables)
+
 
 def test_get_key_cols(my_tables):
     key_cols = my_tables.get_key_cols()
@@ -17,6 +20,7 @@ def test_get_key_cols(my_tables):
     assert key_cols["Addresses"] == ['address_id']
     assert key_cols["Listings"] == ['listing_id']
     assert key_cols["Order_info"] == ['order_id']
+
 
 def test_get_table_class(my_tables):
     t = my_tables.get_table_class("User_info")
@@ -28,10 +32,12 @@ def test_get_table_class(my_tables):
     t = my_tables.get_table_class("Order_info")
     assert t is not None
 
+
 def test_create_and_close_session(my_tables):
     new_session = my_tables.create_session()
     assert new_session is not None
     my_tables.commit_and_close_session(new_session)
+
 
 def test_delete_info(my_tables):
 
@@ -52,8 +58,8 @@ def test_delete_info(my_tables):
     res = my_tables.delete_info(table_name, template)
     assert res is True
 
-def test_add_new_user(my_tables):
 
+def test_add_new_user(my_tables):
     table_name = "Order_info"
     template = {}
     res = my_tables.delete_info(table_name, template)
@@ -72,7 +78,7 @@ def test_add_new_user(my_tables):
     assert res is True
 
     new_user = {"uni": "sa1234",
-                "first_name":"abc",
+                "first_name": "abc",
                 "last_name": "aaa",
                 "user_name": "King",
                 "email": "asd@columbia.edu",
@@ -444,3 +450,33 @@ def test_delete_info(my_tables):
     res, is_success = my_tables.get_info(table_name=table_name, template=template)
     assert is_success is True
     assert len(res) == 0
+
+def test_import_from_csv(my_tables):
+    list1 = ["User_info", "Addresses", "Listings", "Order_info"]
+    list2 = ["Order_info", "Listings", "Addresses", "User_info"]
+    for table_name in list2:
+        my_tables.delete_info(table_name, template=None)
+
+    for table_name in list1:
+        filepath = "dummy_data/" + table_name + ".csv"
+        is_success = my_tables.import_from_csv(table_name=table_name, filepath=filepath)
+        assert is_success is True
+
+    # valid filepath, wrong or empty table name
+    table_name = ""
+    filepath = "dummy_data/User_info.csv"
+    is_success = my_tables.import_from_csv(table_name=table_name, filepath=filepath)
+    assert is_success is False
+
+    # valid filepath, wrong or empty table name
+    table_name = "Random"
+    filepath = "dummy_data/User_info.csv"
+    is_success = my_tables.import_from_csv(table_name=table_name, filepath=filepath)
+    assert is_success is False
+
+    # wrong filepath
+    table_name = "User_info"
+    filepath = "/"
+    my_tables.import_from_csv(table_name=table_name, filepath=filepath)
+    assert is_success is False
+

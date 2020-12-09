@@ -5,6 +5,7 @@ import pymysql
 import pandas as pd
 import dbutils as dbutils
 import logging
+import os
 
 # Gets or creates a logger
 logger = logging.getLogger(__name__)
@@ -24,7 +25,6 @@ class data_tables():
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-    #    'password': 'dbuser666!',
         'password': 'screw2020!',
         'db': 'sys',
         'port': 3306
@@ -387,6 +387,50 @@ class data_tables():
             return True
         except Exception as e:
             logger.error(e)
+            return False
+
+    def import_from_csv(self, table_name, filepath):
+        """ Import data from .csv file into table
+
+        Args:
+            table_name(str): Table name: May be fully qualified dbname.tablename or just tablename.
+            filepath (str): A relative path to the dummy .csv file
+
+        return:
+            True if successfully imported. False if not.
+        """
+        if not table_name or table_name == "":
+            logger.error("Table name cannot be null or empty.")
+            return False
+
+        if not os.path.isfile(filepath):
+            logger.error("File does not exist.")
+            return False
+
+        read = pd.read_csv(filepath)
+
+        if table_name == "User_info":
+            for i, line in read.iterrows():
+                info = line.to_dict()
+                self.add_user_info(info)
+            return True
+        elif table_name == "Addresses":
+            for i, line in read.iterrows():
+                info = line.to_dict()
+                self.add_address(info)
+            return True
+        elif table_name == "Listings":
+            for i, line in read.iterrows():
+                info = line.to_dict()
+                self.add_listing(info)
+            return True
+        elif table_name == "Order_info":
+            for i, line in read.iterrows():
+                info = line.to_dict()
+                self.add_order_info(info)
+            return True
+        else:
+            logger.error("Table name not in database.")
             return False
 
     # def search_book_by_title(self, key_words=None):
