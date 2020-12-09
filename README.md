@@ -15,7 +15,7 @@ To compile all tests:
 $pytest
 ```
 
-To deploy, run the app.py file under src.
+To deploy, run the app.py file under src. 
 ```sh
 $python3 ./src/app.py
 ```

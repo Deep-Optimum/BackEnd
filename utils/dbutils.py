@@ -30,9 +30,12 @@ def get_sql_from_file(file_name=None):
         statements (list): A list of sql statements to be executed.
     """
     # File does not exist
-    print("the current file", file_name)
+    print("\nthe current file", file_name)
+
     if path.isfile(file_name) is False:
         logger.error("File load error: {}".format(file_name))
+        print("\nthe current file2", file_name)
+
         return None
 
     with open(file_name, "r") as sql_file:
@@ -40,6 +43,8 @@ def get_sql_from_file(file_name=None):
         result.pop() #Drop the last entry
         for idx, statement in enumerate(result):
             result[idx] = statement + ";"
+        print("\nthe current file3", file_name)
+
         return result
 
 def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, commit=True):
@@ -59,6 +64,9 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
         the fetch parameter is True. 'execute response' is the return from the connection.execute, which
         is typically the number of rows effected.
     """
+
+    print("hello")
+    print(statements)
     try:
         if conn is None:
             logger.error("Connection cannot be None.")

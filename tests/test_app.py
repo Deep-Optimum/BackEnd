@@ -1,15 +1,13 @@
 import pytest
 import json
-from src import app
-import os
+import app
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def client():
     app.app.config['TESTING'] = True
     with app.app.test_client() as client:
         yield client
-
 
 @pytest.mark.order(10)
 def test_search(client):
