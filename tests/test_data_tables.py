@@ -12,7 +12,6 @@ def my_tables():
 def test_print_table(my_tables):
     print(my_tables)
 
-
 def test_get_key_cols(my_tables):
     key_cols = my_tables.get_key_cols()
     assert len(key_cols), 4
@@ -443,7 +442,7 @@ def test_delete_info_fail(my_tables):
     is_success = my_tables.delete_info(table_name=table_name, template=template)
     assert is_success is False
 
-def test_delete_info(my_tables):
+def test_delete_info_1(my_tables):
     table_name = "Addresses"
     template = {"address_id": "4"}
     is_success = my_tables.delete_info(table_name=table_name, template=template)
@@ -481,4 +480,3 @@ def test_import_from_csv(my_tables):
     filepath = "/"
     my_tables.import_from_csv(table_name=table_name, filepath=filepath)
     assert is_success is False
-

@@ -29,11 +29,11 @@ class data_tables():
     #     'db': 'sys',
     #     'port': 3306
     # }
-    #Use the following before commit
+    # Use the following before commit - Travis does not use PW
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': 'screw2020!',
+        'password': '',
         'db': 'sys',
         'port': 3306
     }

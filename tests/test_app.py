@@ -1,14 +1,13 @@
 import pytest
 import json
 from src import app
-import os
 
-@pytest.fixture
+
+@pytest.fixture(scope="module")
 def client():
     app.app.config['TESTING'] = True
     with app.app.test_client() as client:
         yield client
-
 
 @pytest.mark.order(10)
 def test_search(client):
@@ -142,7 +141,6 @@ def test_order_by_id(client):
     assert data[0]["order_id"] == '1'
     rsp_del = client.delete(url)
     assert rsp_del.status_code == 200
-
 
 @pytest.mark.order(8)
 def test_confirm_order(client):

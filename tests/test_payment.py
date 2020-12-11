@@ -10,7 +10,6 @@ extra_nonces = ["fake-valid-discover-nonce",
 
 load_dotenv()
 
-
 @pytest.fixture
 def client():
     app.app.config['TESTING'] = True
@@ -26,7 +25,6 @@ def test_set_up():
         filepath = "dummy_data/" + table_name + ".csv"
         res = my_tables.import_from_csv(table_name=table_name, filepath=filepath)
         assert res is True
-
 
 def test_checkout_already_ordered(client):
     url = 'http://127.0.0.1:5000/checkouts/1'

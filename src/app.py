@@ -5,10 +5,11 @@ import braintree
 from payment import transact, find_transaction, generate_client_token
 import os
 from src.data_tables import data_tables
-
+from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 app.secret_key = os.environ.get('SECRET_KEY')
 
@@ -334,7 +335,7 @@ def create_checkout(order_id):
         if status == "In Progress":
             # Order Id in the DB - proceed with transaction
             amount = str(float(res["transaction_amt"]))
-            result = transact({
+            result = payment.transact({
                 'amount': amount,
                 'payment_method_nonce': body["payment_method_nonce"],
                 'options': {
