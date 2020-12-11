@@ -61,6 +61,11 @@ def test_checkout_not_id(client):
     rsp = client.post(url, data=json.dumps(payload, indent=4))
     assert rsp.status_code == 400
 
+def test_new_checkout(client):
+    url = 'http://127.0.0.1:5000/checkouts/new'
+    rsp = client.get(url)
+    assert rsp.status_code == 200
+
 
 @pytest.fixture(scope="session", autouse=True)
 def run_down():

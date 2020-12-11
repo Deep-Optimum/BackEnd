@@ -335,7 +335,7 @@ def create_checkout(order_id):
         if status == "In Progress":
             # Order Id in the DB - proceed with transaction
             amount = str(float(res["transaction_amt"]))
-            result = payment.transact({
+            result = transact({
                 'amount': amount,
                 'payment_method_nonce': body["payment_method_nonce"],
                 'options': {
@@ -358,7 +358,10 @@ def create_checkout(order_id):
 @app.route('/checkouts/new', methods=['GET'])
 def new_checkout():
     client_token = generate_client_token()
-    return render_template('checkouts/new.html', client_token=client_token)
+    token = {"client_token": client_token}
+    rsp = Response(json.dumps(token, indent=4), status=200, content_type="application/json")
+    return rsp
+
 """
 @app.route('/checkouts/<transaction_id>', methods=['GET'])
 def show_checkout(transaction_id):
