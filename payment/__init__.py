@@ -2,6 +2,9 @@ import os
 from dotenv import load_dotenv
 import braintree
 
+# This payment setup used documentation by Braintree as an example.
+# https://github.com/braintree/braintree_flask_example/blob/master/gateway/__init__.py
+
 load_dotenv()
 
 gateway = braintree.BraintreeGateway(

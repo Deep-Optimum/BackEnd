@@ -2,8 +2,8 @@ from flask import Flask, request, Response, flash
 import json
 from dotenv import load_dotenv
 import braintree
-from payment import transact, find_transaction
-
+from payment import transact, find_transaction, generate_client_token
+import os
 from src.data_tables import data_tables
 
 load_dotenv()
@@ -327,7 +327,7 @@ def create_checkout(order_id):
         # 1. Both buyer and seller must have confirmed
         buyer_confirm = int(res["buyer_confirm"][0])
         seller_confirm = int(res["seller_confirm"][0])
-        if buyer_confirm is False or seller_confirm is False:
+        if buyer_confirm == 0 or seller_confirm == 0:
             return Response("Both buyer and seller must confirm", status=202, content_type="text/plain")
         # 2. Status is In Progress
         status = str(res["status"][0])
@@ -354,7 +354,10 @@ def create_checkout(order_id):
     else:
         return Response('Query failed', status=400, content_type='text/plain')
 
-
+@app.route('/checkouts/new', methods=['GET'])
+def new_checkout():
+    client_token = generate_client_token()
+    return render_template('checkouts/new.html', client_token=client_token)
 """
 @app.route('/checkouts/<transaction_id>', methods=['GET'])
 def show_checkout(transaction_id):
