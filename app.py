@@ -5,6 +5,7 @@ import braintree
 from payment import transact, find_transaction, generate_client_token
 import os
 import data_tables
+import send_email
 from flask_cors import CORS
 load_dotenv()
 
@@ -132,6 +133,12 @@ def get_user_posts(uni):
         res, is_success = tables.get_info("Listings", template)
         if is_success:
             data = json.loads(res.to_json(orient="table"))["data"]
+            for i in data:
+                listing_id = i["listing_id"]
+                res_get, success = tables.get_info("Order_info", {'listing_id': listing_id})
+                order_data = json.loads(res_get.to_json(orient="table"))['data']
+                if len(order_data) is not 0:
+                    i.update(order_data[0])
             rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
@@ -313,8 +320,9 @@ def confirm_order(order_id, uni):
             data = json.loads(res.to_json(orient="table"))["data"]
             buyer_uni = data[0]['buyer_uni']
             if buyer_uni == uni:
-                is_updated = tables.update_info("Order_info", template, {"buyer_confirm": 1})
+                is_updated = tables.update_info("Order_info", template, {"buyer_confirm": 1, 'status': 'Completed'})
                 if is_updated:
+                    #send_email.send_email(data[0])
                     rsp = Response("Buyer confirmed", status=200, content_type='text/plain')
                     return rsp
         else:
