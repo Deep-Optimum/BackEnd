@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import braintree
 from payment import transact, find_transaction, generate_client_token
 import os
-from src.data_tables import data_tables
+import data_tables
 from flask_cors import CORS
 load_dotenv()
 
@@ -13,7 +13,7 @@ CORS(app)
 
 app.secret_key = os.environ.get('SECRET_KEY')
 
-tables = data_tables()
+tables = data_tables.data_tables()
 _host = "127.0.0.1"
 _port = 5000
 
@@ -193,6 +193,11 @@ def user_orders(uni):
         res, is_success = tables.get_info("Order_info", template)
         if is_success:
             data = json.loads(res.to_json(orient="table"))["data"]
+            for i in data:
+                listing_id = i["listing_id"]
+                res_get, success = tables.get_info("Listings", {'listing_id': listing_id})
+                listing_data = json.loads(res_get.to_json(orient="table"))['data'][0]
+                i.update(listing_data)
             rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
@@ -249,6 +254,9 @@ def address_by_id(address_id):
 def create_order():
     try:
         body = json.loads(request.data)
+        listing_id = body["listing_id"]
+        template = {"listing_id": listing_id}
+        tables.update_info("Listings", template, {"is_sold": 1})
         is_added = tables.add_order_info(body)
         if is_added:
             rsp = Response('New order added', status=200, content_type='text/plain')

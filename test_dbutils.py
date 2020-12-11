@@ -6,21 +6,22 @@ import pymysql
 import dbutils #pylint: disable=import-error
 
 #Use this before commit
+_default_connect_info = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': '',
+    'db': 'sys',
+    'port': 3306
+}
+
 # _default_connect_info = {
 #     'host': 'localhost',
 #     'user': 'root',
-#     'password': '',
+#     'password': 'dbuser666',
 #     'db': 'sys',
 #     'port': 3306
 # }
 
-_default_connect_info = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'dbuser666',
-    'db': 'sys',
-    'port': 3306
-}
 #pylint: disable=missing-function-docstring
 _cnx = pymysql.connect(
     host=_default_connect_info['host'],
