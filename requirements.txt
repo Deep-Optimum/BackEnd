@@ -11,3 +11,4 @@ codecov
 coverage
 flask
 flask-cors
+pylint

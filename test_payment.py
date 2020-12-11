@@ -1,7 +1,10 @@
-import pytest
+"""
+Testing for payment endpoints defined in app.py
+"""
 import json
-from src import app
 from dotenv import load_dotenv
+import pytest
+import app # pylint: disable=import-error
 
 extra_nonces = ["fake-valid-discover-nonce",
                 "fake-valid-discover-nonce",
@@ -10,6 +13,8 @@ extra_nonces = ["fake-valid-discover-nonce",
 
 load_dotenv()
 
+
+# pylint: disable=redefined-outer-name, missing-function-docstring
 @pytest.fixture
 def client():
     app.app.config['TESTING'] = True

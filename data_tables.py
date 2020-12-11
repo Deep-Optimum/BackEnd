@@ -1,12 +1,17 @@
+"""
+Define the model for the database
+"""
+import logging
+import os
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 import pymysql
 import pandas as pd
-from utils import dbutils as dbutils
-import logging
-import os
+import dbutils #pylint: disable=import-error
 
+
+#pylint: disable=invalid-name, broad-except, too-many-instance-attributes, no-self-use, no-member, missing-class-docstring
 # Gets or creates a logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # set log level
@@ -19,24 +24,24 @@ logger.addHandler(file_handler) # add file handler to logger
 # Makes print look better the RDBDataTable rows a little better.
 pd.set_option('display.width', 256)
 pd.set_option('display.max_columns', 12)
-
+#pylint: disable=missing-class-docstring, no-else-return, too-many-arguments
 class data_tables():
 
-    # _default_connect_info = {
-    #     'host': 'localhost',
-    #     'user': 'root',
-    #     'password': 'dbuser666',
-    #     'db': 'sys',
-    #     'port': 3306
-    # }
-    # Use the following before commit - Travis does not use PW
     _default_connect_info = {
         'host': 'localhost',
         'user': 'root',
-        'password': '',
+        'password': 'dbuser666',
         'db': 'sys',
         'port': 3306
     }
+    # Use the following before commit - Travis does not use PW
+    # _default_connect_info = {
+    #     'host': 'localhost',
+    #     'user': 'root',
+    #     'password': '',
+    #     'db': 'sys',
+    #     'port': 3306
+    # }
     _rows_to_print = 10
     Base = automap_base()
 
@@ -174,6 +179,7 @@ class data_tables():
             logger.error(e)
             return None, False
 
+    # pylint: disable=inconsistent-return-statements, too-many-return-statements
     def get_table_class(self, table_name):
         """ Get a table Class
 
@@ -386,7 +392,8 @@ class data_tables():
             return False
         try:
             session = self.create_session()
-            stmt, args = dbutils.create_select(table_name=table_name, template=template, is_select=False)
+            stmt, args = dbutils.create_select(table_name=table_name,
+                                               template=template, is_select=False)
             # res = pd.read_sql_query(stmt, self._engine, params=args)
             cur = self._cnx.cursor()
             cur.execute(stmt, args)
@@ -418,22 +425,22 @@ class data_tables():
         read = pd.read_csv(filepath)
 
         if table_name == "User_info":
-            for i, line in read.iterrows():
+            for _, line in read.iterrows():
                 info = line.to_dict()
                 self.add_user_info(info)
             return True
         elif table_name == "Addresses":
-            for i, line in read.iterrows():
+            for _, line in read.iterrows():
                 info = line.to_dict()
                 self.add_address(info)
             return True
         elif table_name == "Listings":
-            for i, line in read.iterrows():
+            for _, line in read.iterrows():
                 info = line.to_dict()
                 self.add_listing(info)
             return True
         elif table_name == "Order_info":
-            for i, line in read.iterrows():
+            for _, line in read.iterrows():
                 info = line.to_dict()
                 self.add_order_info(info)
             return True

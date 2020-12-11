@@ -1,5 +1,9 @@
-from utils import dbutils
+"""
+Setting up tables in database automatically
+"""
+
 import pymysql
+import dbutils #pylint: disable=import-error
 
 _default_connect_info = {
     'host': 'localhost',
@@ -16,6 +20,6 @@ _cnx = pymysql.connect(
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor)
 
-path = "../resources/schema.sql"
-sql = dbutils.get_sql_from_file(path)
+PATH = "resources/schema.sql"
+sql = dbutils.get_sql_from_file(PATH)
 dbutils.run_multiple_sql_statements(sql, conn=_cnx, commit=True, fetch=True)

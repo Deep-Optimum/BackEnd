@@ -1,8 +1,12 @@
-import pytest
-from src import data_tables as dts
+"""
+Testig data_tables.py
+"""
 import json
+import pytest
+import data_tables as dts # pylint: disable=import-error
 
 
+# pylint: disable=redefined-outer-name, missing-function-docstring, duplicate-code
 @pytest.fixture(scope="module")
 def my_tables():
     tables = dts.data_tables()
@@ -14,7 +18,7 @@ def test_print_table(my_tables):
 
 def test_get_key_cols(my_tables):
     key_cols = my_tables.get_key_cols()
-    assert len(key_cols), 4
+    assert len(key_cols), 4 # pylint: disable=len-as-condition
     assert key_cols["User_info"] == ['uni']
     assert key_cols["Addresses"] == ['address_id']
     assert key_cols["Listings"] == ['listing_id']
@@ -22,14 +26,14 @@ def test_get_key_cols(my_tables):
 
 
 def test_get_table_class(my_tables):
-    t = my_tables.get_table_class("User_info")
-    assert t is not None
-    t = my_tables.get_table_class("Addresses")
-    assert t is not None
-    t = my_tables.get_table_class("Listing")
-    assert t is not None
-    t = my_tables.get_table_class("Order_info")
-    assert t is not None
+    table = my_tables.get_table_class("User_info")
+    assert table is not None
+    table = my_tables.get_table_class("Addresses")
+    assert table is not None
+    table = my_tables.get_table_class("Listing")
+    assert table is not None
+    table = my_tables.get_table_class("Order_info")
+    assert table is not None
 
 
 def test_create_and_close_session(my_tables):
@@ -204,7 +208,10 @@ def test_get_info_empty_name(my_tables):
 def test_get_info_similar(my_tables):
     table_name = "User_info"
     template = {"uni": "%2%"}
-    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_similar=True, is_or=True)
+    _, is_success = my_tables.get_info(table_name=table_name,
+                                         template=template,
+                                         get_similar=True,
+                                         is_or=True)
     assert is_success is True
 
 def test_get_info_similar_multple_fields(my_tables):
@@ -234,7 +241,10 @@ def test_get_info_similar_multple_fields(my_tables):
 
     table_name = "User_info"
     template = {"uni": "%2%", "email": "%columbia%"}
-    res, is_success = my_tables.get_info(table_name=table_name, template=template, get_similar=True, is_or=True)
+    res, is_success = my_tables.get_info(table_name=table_name,
+                                         template=template,
+                                         get_similar=True,
+                                         is_or=True)
     res = res.to_json(orient="table")
     parsed = json.loads(res)
     data = parsed['data']
@@ -422,14 +432,14 @@ def test_update_info_empty_name(my_tables):
 
 def test_get_row_count(my_tables):
 
-    r = my_tables.get_row_count(my_tables._tables[0])  # User info
-    assert r == 4
-    r = my_tables.get_row_count(my_tables._tables[1])  # Addresses
-    assert r == 1
-    r = my_tables.get_row_count(my_tables._tables[2])  # listings
-    assert r == 7
-    r = my_tables.get_row_count(my_tables._tables[3])  # order info
-    assert r == 1
+    res = my_tables.get_row_count(my_tables.get_table_class("User_info"))  # User info
+    assert res == 4
+    res = my_tables.get_row_count(my_tables.get_table_class("Addresses"))  # Addresses
+    assert res == 1
+    res = my_tables.get_row_count(my_tables.get_table_class("Listing"))  # listings
+    assert res == 7
+    res = my_tables.get_row_count(my_tables.get_table_class("Order_info"))  # order info
+    assert res == 1
 
 def test_delete_info_fail(my_tables):
 

@@ -1,7 +1,9 @@
-import pymysql
+"""
+Utility functions
+"""
 import logging
 from os import path
-
+import pymysql
 # Gets or creates a logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # set log level
@@ -11,9 +13,12 @@ formatter = logging.Formatter('%(asctime)s: %(levelname)s: %(name)s: %(message)s
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler) # add file handler to logger
 
+#pylint: disable=invalid-name, logging-format-interpolation, logging-not-lazy, line-too-long, unused-argument, too-many-arguments
+
 def get_connection(connect_info):
     """
-    :param connect_info: A dictionary containing the information necessary to make a PyMySQL connection.
+    :param connect_info: A dictionary containing the information
+        necessary to make a PyMySQL connection.
     :return: The connection. May raise an Exception/Error.
     """
     cnx = pymysql.connect(**connect_info)
@@ -30,12 +35,8 @@ def get_sql_from_file(file_name=None):
         statements (list): A list of sql statements to be executed.
     """
     # File does not exist
-    print("\nthe current file", file_name)
-
     if path.isfile(file_name) is False:
         logger.error("File load error: {}".format(file_name))
-        print("\nthe current file2", file_name)
-
         return None
 
     with open(file_name, "r") as sql_file:
@@ -43,8 +44,6 @@ def get_sql_from_file(file_name=None):
         result.pop() #Drop the last entry
         for idx, statement in enumerate(result):
             result[idx] = statement + ";"
-        print("\nthe current file3", file_name)
-
         return result
 
 def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, commit=True):
@@ -65,8 +64,6 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
         is typically the number of rows effected.
     """
 
-    print("hello")
-    print(statements)
     try:
         if conn is None:
             logger.error("Connection cannot be None.")
@@ -79,7 +76,7 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
             logger.error("Sql statement list is empty")
             raise ValueError("Sql statement list is empty")
 
-        for idx, statement in enumerate(statements):
+        for _, statement in enumerate(statements):
             logger.debug("Executing SQL = " + statement)
             res = cur.execute(statement)
         if fetch:
@@ -88,9 +85,9 @@ def run_multiple_sql_statements(statements, fetch=True, cur=None, conn=None, com
             data = None
         if commit:
             conn.commit()
-    except Exception as e:
-        logger.error(e)
-        raise(e)
+    except Exception as exception:
+        logger.error(exception)
+        raise exception
 
     return (res, data)
 
@@ -117,7 +114,7 @@ def template_to_where_clause(template, is_like=False, is_or=False):
         else:
             for k, v in template.items():
                 s = " " + k + " LIKE %s "
-                if type(v) is list:
+                if isinstance(v, list):
                     terms.extend([s] * len(v))
                     args.extend(v)
                 else:
