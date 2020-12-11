@@ -137,7 +137,7 @@ def get_user_posts(uni):
                 listing_id = i["listing_id"]
                 res_get, success = tables.get_info("Order_info", {'listing_id': listing_id})
                 order_data = json.loads(res_get.to_json(orient="table"))['data']
-                if len(order_data) is not 0:
+                if len(order_data) != 0:
                     i.update(order_data[0])
             rsp = Response(json.dumps(data), status=200, content_type="application/json")
         else:
@@ -267,6 +267,7 @@ def create_order():
         is_added = tables.add_order_info(body)
         if is_added:
             rsp = Response('New order added', status=200, content_type='text/plain')
+            send_email.send_email(body)
         else:
             rsp = Response("Add unsuccessful", status=400, content_type='text/plain')
         return rsp
@@ -322,7 +323,7 @@ def confirm_order(order_id, uni):
             if buyer_uni == uni:
                 is_updated = tables.update_info("Order_info", template, {"buyer_confirm": 1, 'status': 'Completed'})
                 if is_updated:
-                    #send_email.send_email(data[0])
+                    send_email.send_email(data[0])
                     rsp = Response("Buyer confirmed", status=200, content_type='text/plain')
                     return rsp
         else:
