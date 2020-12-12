@@ -19,10 +19,10 @@ The backend database schema is defined in schema.sql under the folder resources.
 You can automatically build your database and tables by running
 
 ```sh
-$python src/set_up.py
+$python set_up.py
 ```
 
 To deploy the backend,
 ```sh
-$python3 src/app.py
+$python3 app.py
 ```
