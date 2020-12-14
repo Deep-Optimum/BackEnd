@@ -1,12 +1,15 @@
-from flask import Flask, request, Response, flash
+"""
+    Defines all the endpoints.
+"""
 import json
+import os
+from flask import Flask, request, Response, flash
 from dotenv import load_dotenv
 import braintree
-from payment import transact, find_transaction, generate_client_token
-import os
-import data_tables
-import send_email
 from flask_cors import CORS
+from payment import transact, find_transaction, generate_client_token # pylint: disable=no-name-in-module, unused-import
+import data_tables # pylint: disable=import-error, invalid-name
+import send_email # pylint: disable=import-error
 load_dotenv()
 
 app = Flask(__name__)
@@ -15,9 +18,9 @@ CORS(app)
 app.secret_key = os.environ.get('SECRET_KEY')
 
 tables = data_tables.data_tables()
-_host = "127.0.0.1"
-_port = 5000
-
+_HOST = "127.0.0.1"
+_PORT = 5000
+# pylint: disable=missing-function-docstring, broad-except, inconsistent-return-statements, no-else-return, unused-variable
 TRANSACTION_SUCCESS_STATUSES = [
     braintree.Transaction.Status.Authorized,
     braintree.Transaction.Status.Authorizing,
@@ -37,7 +40,8 @@ def search():
             res, is_success = tables.get_info("Listings", template)
             if is_success:
                 data = json.loads(res.to_json(orient="table"))["data"]
-                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
+                rsp = Response(json.dumps(data, default=str), status=200,
+                               content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
@@ -45,15 +49,17 @@ def search():
             word_list = request.args.get("title").lower().split()
             query_str = '%'+'%'.join(word_list)+'%'
             template = {"title": query_str}
-            res, is_success = tables.get_info("Listings", template, get_similar=True, order_by=['category'], is_or=True)
+            res, is_success = tables.get_info("Listings", template, get_similar=True,
+                                              order_by=['category'], is_or=True)
             if is_success:
                 data = json.loads(res.to_json(orient="table"))["data"]
-                rsp = Response(json.dumps(data, default=str), status=200, content_type="application/json")
+                rsp = Response(json.dumps(data, default=str), status=200,
+                               content_type="application/json")
             else:
                 rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -67,10 +73,9 @@ def create_new_post():
             rsp = Response('New post added', status=200, content_type='text/plain')
         else:
             rsp = Response("Add unsuccessful", status=400, content_type='text/plain')
-            pass
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -82,8 +87,13 @@ def post_by_id(listing_id):
             body = json.loads(request.data)
             template = {'listing_id': listing_id}
             is_updated = tables.update_info("Listings", template, body)
+
             if is_updated:
                 rsp = Response('Post updated', status=200, content_type='text/plain')
+                res, _ = tables.get_info("Listings", template)
+                data = json.loads(res.to_json(orient="table"))["data"]
+                price = data[0]["price"]
+                tables.update_info("Order_info", template, {"transaction_amt": price})
             else:
                 rsp = Response("Update unsuccessful", status=400, content_type='text/plain')
             return rsp
@@ -104,8 +114,8 @@ def post_by_id(listing_id):
             else:
                 rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -120,8 +130,8 @@ def create_user():
         else:
             rsp = Response("Add unsuccessful", status=400, content_type='text/plain')
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -143,8 +153,8 @@ def get_user_posts(uni):
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -170,8 +180,8 @@ def user_by_uni(uni):
             else:
                 rsp = Response("Update unsuccessful", status=400, content_type='text/plain')
             return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -187,8 +197,8 @@ def user_address(uni):
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -209,8 +219,8 @@ def user_orders(uni):
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -225,8 +235,8 @@ def create_address():
         else:
             rsp = Response("Add unsuccessful", status=400, content_type='text/plain')
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -251,8 +261,8 @@ def address_by_id(address_id):
             else:
                 rsp = Response("Delete unsuccessful", status=400, content_type='text/plain')
             return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -271,8 +281,8 @@ def create_order():
         else:
             rsp = Response("Add unsuccessful", status=400, content_type='text/plain')
         return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -306,8 +316,8 @@ def order_by_id(order_id):
             else:
                 rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -321,16 +331,18 @@ def confirm_order(order_id, uni):
             data = json.loads(res.to_json(orient="table"))["data"]
             buyer_uni = data[0]['buyer_uni']
             if buyer_uni == uni:
-                is_updated = tables.update_info("Order_info", template, {"buyer_confirm": 1, 'status': 'Completed'})
+                is_updated = tables.update_info("Order_info", template,
+                                {"buyer_confirm": 1, 'status': 'Completed'})
                 if is_updated:
+                    tables.update_info("Listing", template, {'is_sold': 1})
                     send_email.send_email(data[0])
                     rsp = Response("Buyer confirmed", status=200, content_type='text/plain')
                     return rsp
         else:
             rsp = Response("Query unsuccessful", status=400, content_type='text/plain')
             return rsp
-    except Exception as e:
-        print(e)
+    except Exception as exp:
+        print(exp)
         rsp = Response("Internal error", status=500, content_type='text/plain')
         return rsp
 
@@ -346,7 +358,8 @@ def create_checkout(order_id):
         buyer_confirm = int(res["buyer_confirm"][0])
         seller_confirm = int(res["seller_confirm"][0])
         if buyer_confirm == 0 or seller_confirm == 0:
-            return Response("Both buyer and seller must confirm", status=202, content_type="text/plain")
+            return Response("Both buyer and seller must confirm", status=202,
+                            content_type="text/plain")
         # 2. Status is In Progress
         status = str(res["status"][0])
         if status == "In Progress":
@@ -361,14 +374,16 @@ def create_checkout(order_id):
             })
             if result.is_success or result.transaction:
                 tables.update_info("Order_info", template, {'status': 'Completed'})
+                tables.update_info("Listing", template, {'is_sold': 1})
                 return Response("Transaction success", status=200, content_type="text/plain")
             else:
-                for x in result.errors.deep_errors:
-                    flash('Error: %s: %s' % (x.code, x.message))
+                for err in result.errors.deep_errors:
+                    flash('Error: %s: %s' % (err.code, err.message))
                 return Response("Transaction failed", status=401, content_type="text/plain")
 
         else:
-            return Response("Error. Please check with the admin.", status=201, content_type="text/plain")
+            return Response("Error. Please check with the admin.", status=201,
+                            content_type="text/plain")
     else:
         return Response('Query failed', status=400, content_type='text/plain')
 
@@ -379,27 +394,28 @@ def new_checkout():
     rsp = Response(json.dumps(token, indent=4), status=200, content_type="application/json")
     return rsp
 
-"""
-@app.route('/checkouts/<transaction_id>', methods=['GET'])
-def show_checkout(transaction_id):
-    transaction = find_transaction(transaction_id)
-    result = {}
-    if transaction.status in TRANSACTION_SUCCESS_STATUSES:
-        result = {
-            'header': 'Sweet Success!',
-            'icon': 'success',
-            'message': 'Your transaction has been successfully processed. Please coordinate a time with your seller.'
-        }
-    else:
-        result = {
-            'header': 'Transaction Failed',
-            'icon': 'fail',
-            'message': 'Your test transaction has a status of ' + transaction.status + '. Try again.'
-        }
-    return Response(json.dumps(result), status=200, content_type='text/plain')
-    #return render_template('checkouts/show.html', transaction=transaction, result=result)
-"""
+# @app.route('/checkouts/<transaction_id>', methods=['GET'])
+# def show_checkout(transaction_id):
+#     transaction = find_transaction(transaction_id)
+#     result = {}
+#     if transaction.status in TRANSACTION_SUCCESS_STATUSES:
+#         result = {
+#             'header': 'Sweet Success!',
+#             'icon': 'success',
+#             'message': 'Your transaction has been successfully processed. Please
+#             coordinate a time with your seller.'
+#         }
+#     else:
+#         result = {
+#             'header': 'Transaction Failed',
+#             'icon': 'fail',
+#             'message': 'Your test transaction has a status of ' +
+#             transaction.status + '. Try again.'
+#         }
+#     return Response(json.dumps(result), status=200, content_type='text/plain')
+#     #return render_template('checkouts/show.html', transaction=transaction, result=result)
+
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host=_host, port=_port)
+    app.run(host=_HOST, port=_PORT)
